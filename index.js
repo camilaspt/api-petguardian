@@ -1,16 +1,16 @@
 
-const express = require("express");
-const conectarDB = require('./config/conectarDB.js');
-const app = express();
+const express = require('express'); 
+const connection = require('./config/conectarDB.js');
 const port = process.env.PORT || 3000;
 const usuarioRoutes = require('./routes/usuarioRoutes.js');
 
-conectarDB();
+connection.conectarDB();
 
+const app = express();
 app.use(express.json());
+app.use('/api/usuarios/', usuarioRoutes);
 
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });
 
-app.use('/api/usuarios', usuarioRoutes);
