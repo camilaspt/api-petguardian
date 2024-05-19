@@ -21,7 +21,23 @@ const getUsers = async (req, res) => {
     }
 }
 
+const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await Usuario.findOne({ email, password });
+        if (!user) {
+            res.status(404).json({ message: 'Alguno de los datos ingresados es incorrecto' });
+        } else {
+            res.status(200).json(user);
+        }
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 module.exports = {
     createNewUser,
-    getUsers
+    getUsers,
+    login
 }
