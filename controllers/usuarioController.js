@@ -45,9 +45,21 @@ const deleteUser = async (req, res) => {
     }
 }
 
+const editUser = async (req, res) => {
+    try {
+        const idUser = req.params.id;
+        const { nombre, apellido, telefono, email, password, domicilio, rol, habilitado } = req.body;
+        const result = await Usuario.updateOne({_id:idUser}, { nombre, apellido, telefono, email, password, domicilio, rol, habilitado });
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 module.exports = {
     createNewUser,
     getUsers,
     login,
-    deleteUser
+    deleteUser,
+    editUser
 }
