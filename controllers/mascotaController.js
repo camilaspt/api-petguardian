@@ -11,8 +11,8 @@ const getMascotas = async (req, res) => {
 
 const createMascota = async (req, res) => {
     try {
-        const { nombre, tipoMascota, etapaVida, obsComida, obsEnfermedades, obsOtros } = req.body;
-        const newMascota = await Mascota.create({ nombre, tipoMascota, etapaVida, obsComida, obsEnfermedades, obsOtros });
+        const { nombre, tipoMascota, etapaVida, obsComida, obsEnfermedades, obsOtros, usuario } = req.body;
+        const newMascota = await Mascota.create({ nombre, tipoMascota, etapaVida, obsComida, obsEnfermedades, obsOtros, usuario });
         res.status(201).json(newMascota);
     } catch (error) {
         console.log(error.message);
