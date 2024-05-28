@@ -22,6 +22,8 @@ const getUsers = async (req, res) => {
 
 const login = async (req, res) => {
     try {
+        console.log("entro a login")
+        console.log(req.body);
         const { email, password } = req.body;
         const user = await Usuario.findOne({ email, password });
         if (!user) {
@@ -31,6 +33,7 @@ const login = async (req, res) => {
         }
     }
     catch (error) {
+        console.log(error.message);
         res.status(400).json({ message: error.message });
     }
 }
