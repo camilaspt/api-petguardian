@@ -12,6 +12,7 @@ const tipoMascotaRoutes = require('./routes/tipoMascotaRoutes.js');
 const estadoRoutes = require ('./routes/estadoRoutes.js');
 const reservaRoutes = require ('./routes/reservaRoutes.js');
 const turnoRoutes = require ('./routes/turnoRoutes.js');
+const disponibilidadCuidadorRoutes = require ('./routes/disponibilidadCuidadorRoutes.js');
 
 connection.conectarDB();
 
@@ -28,6 +29,7 @@ app.use('/api/tiposMascota/', tipoMascotaRoutes);
 app.use ('/api/estados/', estadoRoutes);
 app.use ('/api/reservas/', reservaRoutes);
 app.use ('/api/turnos/', turnoRoutes); 
+app.use ('/api/disponibilidadCuidador/', disponibilidadCuidadorRoutes); 
 
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
