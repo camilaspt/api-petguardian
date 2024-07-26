@@ -1,4 +1,4 @@
-const Disponibilidad = require('../models/DisponibilidadCuidadorController.js');
+const Disponibilidad = require('../models/disponibilidadCuidadorController.js');
 
 const getDisponibilidad = async (req, res) => {
     try { 
