@@ -20,4 +20,20 @@ function verifyToken(req, res, next) {
     });
   }
 
-module.exports = { verifyToken };
+function allowCliente(req, res, next) {
+    if (req.rol === 'CLIENTE') {
+        next();
+    } else {
+        return res.status(403).json({ message: 'No tienes permisos para acceder a este recurso' });
+    }
+}
+
+function allowCuidador(req, res, next) {
+    if (req.rol === 'CUIDADOR') {
+        next();
+    } else {
+        return res.status(403).json({ message: 'No tienes permisos para acceder a este recurso' });
+    }
+}
+
+module.exports = { verifyToken, allowCliente, allowCuidador };
