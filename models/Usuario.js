@@ -1,44 +1,50 @@
-const moongose = require('mongoose');
-const UsuarioSchema = new moongose.Schema({
+const moongose = require("mongoose");
+const UsuarioSchema = new moongose.Schema(
+  {
     nombre: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      trim: true,
     },
     apellido: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      trim: true,
     },
     telefono: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      trim: true,
     },
     email: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      trim: true,
     },
     password: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      trim: true,
     },
     domicilio: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      trim: true,
     },
     rol: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      enum: ['Cuidador', 'Cliente', 'Administrador'],
+      trim: true,
     },
     habilitado: {
-        type: Boolean,
-        default: false
-    }
-});
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    discriminatorKey: "rol",
+  }
+);
 
-module.exports = moongose.model('Usuario', UsuarioSchema);
+module.exports = moongose.model("Usuario", UsuarioSchema);
