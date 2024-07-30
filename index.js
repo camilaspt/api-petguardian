@@ -11,7 +11,7 @@ const etapaVidaRoutes = require('./routes/etapaVidaRoutes.js');
 const tipoMascotaRoutes = require('./routes/tipoMascotaRoutes.js');
 const estadoRoutes = require ('./routes/estadoRoutes.js');
 const reservaRoutes = require ('./routes/reservaRoutes.js');
-const clienteRoutes = require ('./routes/clienteRoutes.js
+const clienteRoutes = require ('./routes/clienteRoutes.js');
 const turnoRoutes = require ('./routes/turnoRoutes.js');
 
 connection.conectarDB();

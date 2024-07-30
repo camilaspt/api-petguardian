@@ -1,11 +1,15 @@
 const Usuario = require('../models/Usuario.js');
+const passwordService = require('../services/passwordService.js');
+const tokenAuthService = require('../services/tokenAuthService.js');
 
 const createNewUser = async (req, res) => {
     try {
         const { nombre, apellido, telefono, email, password, domicilio, rol} = req.body;
-        const newUser = await Usuario.create({ nombre, apellido, telefono, email, password, domicilio, rol: 'USUARIO', habilitado: false });
+        const encriptedPassword = await passwordService.encriptPassword(password);
+        const newUser = await Usuario.create({ nombre, apellido, telefono, email, password: encriptedPassword, domicilio, rol, habilitado: false });
         res.status(201).json(newUser);
     } catch (error) {
+        console.log("error")
         console.log(error.message);
         res.status(400).json({ message: error.message });
     }
@@ -22,14 +26,16 @@ const getUsers = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        console.log("entro a login")
-        console.log(req.body);
         const { email, password } = req.body;
-        const user = await Usuario.findOne({ email, password });
+        const user = await Usuario.findOne({ email: email });
         if (!user) {
-            res.status(404).json({ message: 'Alguno de los datos ingresados es incorrecto' });
+            res.status(404).json({ message: 'No existe ningun usuario registrado con ese email' });
         } else {
-            res.status(200).json(user);
+            const matchedPasswords = await passwordService.decryptPassword(password, user.password);
+            if(matchedPasswords) {
+                const token =  tokenAuthService.createToken(user._id);
+                res.status(200).json({mesage: 'Usuario logueado con exito', token: token, rol: user.rol});
+            }
         }
     }
     catch (error) {
