@@ -3,6 +3,11 @@ const TurnoSchema = new mongoose.Schema({
     fechaHoraInicio: {
         type: Date,
         required: true
+    },
+        reserva: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Reserva',
+        required: true
     }
 });
 
