@@ -9,6 +9,7 @@ const tipoMascotaRoutes = require('./tipoMascotaRoutes.js');
 const estadoRoutes = require ('./estadoRoutes.js');
 const reservaRoutes = require ('./reservaRoutes.js');
 const turnoRoutes = require ('./turnoRoutes.js');
+const disponibilidadCuidadorRoutes = require ('./disponibilidadCuidadorRoutes.js');
 
 router.use('/api/usuarios/', usuarioRoutes);
 router.use('/api/mascotas/', mascotaRoutes);
@@ -17,5 +18,6 @@ router.use('/api/tiposMascota/', tipoMascotaRoutes);
 router.use ('/api/estados/', estadoRoutes);
 router.use ('/api/reservas/', reservaRoutes);
 router.use ('/api/turnos/', turnoRoutes);
+router.use ('/api/disponibilidadCuidador/', disponibilidadCuidadorRoutes); 
 
 module.exports = router;
