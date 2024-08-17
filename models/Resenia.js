@@ -6,7 +6,7 @@ const ReseniaSchema = new mongoose.Schema({
     required: true,
   },
   
-  fecha: {
+  fechaResenia: {
     type: Date,
     required: true,
     trim: true,
