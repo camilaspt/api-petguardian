@@ -11,8 +11,8 @@ const getResenias = async (req, res) => {
 
 const createResenia = async (req, res) => {
     try {
-        const { reserva, fechaResenia, puntuacion, comentario } = req.body;
-        const newResenia = await Resenia.create({ reserva, fechaResenia, puntuacion, comentario });
+        const { reserva, fecha, puntuacion, comentario } = req.body;
+        const newResenia = await Resenia.create({ reserva, fecha, puntuacion, comentario });
         res.status(201).json(newResenia);
     } catch (error) {
         console.log(error.message);
