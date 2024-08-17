@@ -2,7 +2,7 @@ const Resenia = require('../models/Resenia.js');
 
 const getResenias = async (req, res) => {
     try {
-        const resenias = await Resenia.find().populate('reserva', 'fechaInicio');
+        const resenias = await Resenia.find();
         res.status(200).json(resenias);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -33,7 +33,7 @@ const deleteResenia = async (req, res) => {
 const getOneResenia = async (req, res) => {
     try {
         const idResenia = req.params.id;
-        const resenia = await Resenia.findById(idResenia).populate('reserva', 'fechaInicio');
+        const resenia = await Resenia.findById(idResenia);
         res.status(200).json(resenia);
     } catch (error) {
         res.status(400).json({ message: error.message });
