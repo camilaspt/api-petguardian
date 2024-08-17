@@ -6,4 +6,4 @@ router.get('/', disponibilidadCuidadorController.getDisponibilidad);
 router.post('/', disponibilidadCuidadorController.createDisponibilidad);
 router.delete('/:id', disponibilidadCuidadorController.deleteDisponibilidad);
 
-module.exports = router;
+module.exports = router; 

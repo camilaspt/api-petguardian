@@ -10,4 +10,4 @@ const DisponibilidadCuidadorSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('DisponibilidadCuidador', DisponibilidadCuidadorSchema);
+module.exports = mongoose.model('DisponibilidadCuidador', DisponibilidadCuidadorSchema); 

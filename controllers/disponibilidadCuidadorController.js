@@ -34,4 +34,4 @@ module.exports = {
     getDisponibilidad,
     createDisponibilidad,
     deleteDisponibilidad
-}
+} 
