@@ -1,13 +1,12 @@
 const Usuario = require('../models/Usuario.js');
+const service = require('../services/usuarioService.js');
 const passwordService = require('../services/passwordService.js');
 const tokenAuthService = require('../services/tokenAuthService.js');
 
 const createNewUser = async (req, res) => {
     try {
-        const { nombre, apellido, telefono, email, password, domicilio, rol} = req.body;
-        const encriptedPassword = await passwordService.encriptPassword(password);
-        const newUser = await Usuario.create({ nombre, apellido, telefono, email, password: encriptedPassword, domicilio, rol, habilitado: false });
-        res.status(201).json(newUser);
+        const user = await service.crearUsuario(req.body);
+        res.status(201).json(user);
     } catch (error) {
         console.log("error")
         console.log(error.message);
