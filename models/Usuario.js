@@ -12,7 +12,7 @@ const UsuarioSchema = new moongose.Schema({
   },
   telefono: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   email: {
@@ -27,7 +27,7 @@ const UsuarioSchema = new moongose.Schema({
   },
   domicilio: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   rol: {
