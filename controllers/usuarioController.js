@@ -33,7 +33,7 @@ const login = async (req, res) => {
             const matchedPasswords = await passwordService.decryptPassword(password, user.password);
             if(matchedPasswords) {
                 const token =  tokenAuthService.createToken(user._id);
-                res.status(200).json({mesage: 'Usuario logueado con exito', token: token, rol: user.rol});
+                res.status(200).json({mesage: 'Usuario logueado con exito', token: token, rol: user.rol, idUsuario: user._id});
             }
         }
     }

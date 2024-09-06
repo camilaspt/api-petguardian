@@ -1,4 +1,5 @@
 const Mascota = require('../models/Mascota.js');
+const service = require('../services/mascotaService.js');
 
 const getMascotas = async (req, res) => {
     try {
@@ -11,8 +12,8 @@ const getMascotas = async (req, res) => {
 
 const createMascota = async (req, res) => {
     try {
-        const { nombre, tipoMascota, etapaVida, obsComida, obsEnfermedades, obsOtros, usuario } = req.body;
-        const newMascota = await Mascota.create({ nombre, tipoMascota, etapaVida, obsComida, obsEnfermedades, obsOtros, usuario });
+        console.log(req.body);
+        const newMascota = await service.crearMascota(req.body);
         res.status(201).json(newMascota);
     } catch (error) {
         console.log(error.message);
