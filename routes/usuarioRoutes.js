@@ -10,5 +10,6 @@ router.put('/update/:id', usuarioController.editUser);
 //router.put('/updatePassword/:id', usuarioController.editPassword);
 router.get('/cuidadorHabilitado/', usuarioController.getCuidadorHabilitado);
 router.get('/cuidadorNoHabilitado/', usuarioController.getCuidadorNoHabilitado);
+router.get('/:id', usuarioController.getOneUser);
 
 module.exports = router;
