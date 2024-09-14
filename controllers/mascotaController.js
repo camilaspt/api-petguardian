@@ -3,7 +3,7 @@ const service = require('../services/mascotaService.js');
 
 const getMascotas = async (req, res) => {
     try {
-        const mascotas = await Mascota.find().populate('usuario', 'nombre').populate('tipoMascota', 'nombre').populate('etapaVida', 'nombre');
+        const mascotas = await Mascota.find({eliminado: false}).populate('usuario', 'nombre').populate('tipoMascota', 'nombre').populate('etapaVida', 'nombre');
         res.status(200).json(mascotas);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -24,7 +24,7 @@ const createMascota = async (req, res) => {
 const deleteMascota = async (req, res) => {
     try {
         const idMascota = req.params.id;
-        const result = await Mascota.deleteOne({_id:idMascota});
+        const result = await Mascota.updateOne({_id:idMascota}, { eliminado: true });
         res.status(200).json(result); 
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -45,7 +45,7 @@ const editMascota = async (req, res) => {
 const getMascotasPorUsuario = async (req, res) => {
     try {
         const idUsuario = req.params.id;
-        const mascotas = await Mascota.find({usuario: idUsuario}).populate('usuario', 'nombre').populate('tipoMascota', 'nombre').populate('etapaVida', 'nombre');
+        const mascotas = await Mascota.find({usuario: idUsuario, eliminado: false}).populate('usuario', 'nombre').populate('tipoMascota', 'nombre').populate('etapaVida', 'nombre');
         res.status(200).json(mascotas);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -55,7 +55,7 @@ const getMascotasPorUsuario = async (req, res) => {
 const getOneMascota = async (req, res) => {
     try {
         const idMascota = req.params.id;
-        const mascota = await Mascota.findById(idMascota).populate('usuario', 'nombre').populate('tipoMascota', 'nombre').populate('etapaVida', 'nombre');
+        const mascota = await Mascota.findOne({_id:idMascota, eliminado: false} ).populate('usuario', 'nombre').populate('tipoMascota', 'nombre').populate('etapaVida', 'nombre');
         res.status(200).json(mascota);
     } catch (error) {
         res.status(400).json({ message: error.message });

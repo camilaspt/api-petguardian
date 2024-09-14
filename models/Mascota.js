@@ -31,6 +31,10 @@ const MascotaSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Usuario',
         required: true
+    },
+    eliminado: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true }); 
 

@@ -7,5 +7,8 @@ router.post('/', usuarioController.createNewUser);
 router.post('/login', usuarioController.login);
 router.delete('/delete/:id', usuarioController.deleteUser);
 router.put('/update/:id', usuarioController.editUser);
+//router.put('/updatePassword/:id', usuarioController.editPassword);
+router.get('/cuidadorHabilitado/', usuarioController.getCuidadorHabilitado);
+router.get('/cuidadorNoHabilitado/', usuarioController.getCuidadorNoHabilitado);
 
 module.exports = router;

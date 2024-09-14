@@ -16,7 +16,7 @@ const createNewUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
     try {
-        const users = await Usuario.find();
+        const users = await Usuario.find({eliminado: false});
         res.status(200).json(users);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -26,7 +26,7 @@ const getUsers = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await Usuario.findOne({ email: email });
+        const user = await Usuario.findOne({ email: email, eliminado: false });
         if (!user) {
             res.status(404).json({ message: 'No existe ningun usuario registrado con ese email' });
         } else {
@@ -46,7 +46,7 @@ const login = async (req, res) => {
 const deleteUser = async (req, res) => {
     try {
         const idUser = req.params.id;
-        const result = await Usuario.deleteOne({_id:idUser});
+        const result = await Usuario.updateOne({_id:idUser}, { eliminado: true });
         res.status(200).json(result); 
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -64,10 +64,30 @@ const editUser = async (req, res) => {
     }
 }
 
+const getCuidadorHabilitado = async (req, res) => {
+    try {
+        const users = await Usuario.find({rol: {$regex: /^cuidador$/i}, habilitado: true, eliminado: false});
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+const getCuidadorNoHabilitado = async (req, res) => {
+    try {
+        const users = await Usuario.find({rol: {$regex: /^cuidador$/i}, habilitado: false, eliminado: false});
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 module.exports = {
     createNewUser,
     getUsers,
     login,
     deleteUser,
-    editUser
+    editUser,
+    getCuidadorHabilitado,
+    getCuidadorNoHabilitado
 }
