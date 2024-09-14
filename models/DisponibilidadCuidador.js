@@ -8,6 +8,6 @@ const DisponibilidadCuidadorSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-});
+}); 
 
 module.exports = mongoose.model('DisponibilidadCuidador', DisponibilidadCuidadorSchema);

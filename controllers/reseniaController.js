@@ -12,8 +12,8 @@ const getResenias = async (req, res) => {
 
 const createResenia = async (req, res) => {
     try {
-        const { reserva, fecha, puntuacion, comentario } = req.body;
-        const newResenia = await Resenia.create({ reserva, fecha, puntuacion, comentario });
+        const { reserva, puntuacion, comentario } = req.body;
+        const newResenia = await Resenia.create({ reserva, puntuacion, comentario });
         res.status(201).json(newResenia);
     } catch (error) {
         console.log(error.message);
@@ -34,7 +34,6 @@ const deleteResenia = async (req, res) => {
 const getOneResenia = async (req, res) => {
     try {
         const idResenia = req.params.id;
-        const reservas = await Reser.find({ userId: userId });
         const resenia = await Resenia.findById(idResenia);
         res.status(200).json(resenia);
     } catch (error) {

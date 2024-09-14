@@ -4,5 +4,7 @@ const EstadoSchema = new moongose.Schema({
         type: String,
         required: true,
         trim: true
-    }});
+    }
+});
+
 module.exports = moongose.model('Estado', EstadoSchema);

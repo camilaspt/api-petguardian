@@ -9,6 +9,6 @@ const TurnoSchema = new mongoose.Schema({
         ref: 'Reserva',
         required: true
     }
-});
+}); 
 
 module.exports = mongoose.model('Turno', TurnoSchema);

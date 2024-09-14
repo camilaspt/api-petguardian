@@ -5,6 +5,6 @@ const TipoMascotaSchema = new mongoose.Schema({
         required: true,
         trim: true
     }
-});
+}); 
 
 module.exports = mongoose.model('TipoMascota', TipoMascotaSchema);
