@@ -16,6 +16,6 @@ const ReseniaSchema = new mongoose.Schema({
     type: String,
     trim: true,
   }
-}, { timestamps: true });
+}, { timestamps: true }); 
 
 module.exports = mongoose.model("Resenia", ReseniaSchema);

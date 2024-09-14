@@ -5,6 +5,6 @@ const EtapaVidaSchema = new mongoose.Schema({
         required: true,
         trim: true
     }
-});
+}); 
 
 module.exports = mongoose.model('EtapaVida', EtapaVidaSchema);

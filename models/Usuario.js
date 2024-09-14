@@ -58,6 +58,6 @@ const UsuarioSchema = new moongose.Schema({
     required: false,
     trim: true,
   },
-}, { timestamps: true });
+}, { timestamps: true }); 
 
 module.exports = moongose.model("Usuario", UsuarioSchema);
