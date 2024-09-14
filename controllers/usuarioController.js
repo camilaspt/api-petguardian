@@ -26,7 +26,7 @@ const getUsers = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await Usuario.findOne({email: email});
+        const user = await Usuario.findOne({email: email, eliminado: false});
         if (!user) {
             res.status(404).json({ message: 'No existe ningun usuario registrado con ese email' });
         } else {
@@ -82,6 +82,16 @@ const getCuidadorNoHabilitado = async (req, res) => {
     }
 }
 
+const getOneUser = async (req, res) => {
+    try {
+        const idUser = req.params.id;
+        const user = await Usuario.findOne({_id:idUser, eliminado: false});
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 module.exports = {
     createNewUser,
     getUsers,
@@ -89,5 +99,6 @@ module.exports = {
     deleteUser,
     editUser,
     getCuidadorHabilitado,
-    getCuidadorNoHabilitado
+    getCuidadorNoHabilitado,
+    getOneUser
 }
