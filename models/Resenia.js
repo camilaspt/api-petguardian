@@ -5,13 +5,7 @@ const ReseniaSchema = new mongoose.Schema({
     ref: "Reserva",
     required: true,
   },
-  
-  fecha: {
-    type: Date,
-    required: true,
-    trim: true,
-  },
-
+ 
   puntuacion: {
     type: Number,
     required: true,
@@ -22,6 +16,6 @@ const ReseniaSchema = new mongoose.Schema({
     type: String,
     trim: true,
   }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("Resenia", ReseniaSchema);

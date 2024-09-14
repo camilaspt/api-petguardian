@@ -40,6 +40,6 @@ const ReservaSchema = new mongoose.Schema({
     ref: "Estado",
     required: true,
   },
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("Reserva", ReservaSchema);

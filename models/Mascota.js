@@ -32,6 +32,6 @@ const MascotaSchema = new mongoose.Schema({
         ref: 'Usuario',
         required: true
     }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Mascota', MascotaSchema);
