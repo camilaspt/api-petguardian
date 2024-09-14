@@ -6,13 +6,14 @@ const passwordService = require('./passwordService.js');
 //     "password": "123456",
 //     "nombre": "test",
 //     "apellido": "test",
-//     "cuidador": false
+//     "cuidador": false,
 // }
 
 const crearUsuario = async (usuario) => {
     try {
         usuario.cuidador ? usuario.rol = "Cuidador" : usuario.rol = "Cliente";
         usuario.password = await passwordService.encriptPassword(usuario.password);
+        usuario.eliminado = false;
         const newUser = await Usuario.create(usuario);
         return newUser;
     } catch (error) {
