@@ -26,7 +26,7 @@ const getUsers = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await Usuario.findOne({ email: email, eliminado: false });
+        const user = await Usuario.findOne({email: email});
         if (!user) {
             res.status(404).json({ message: 'No existe ningun usuario registrado con ese email' });
         } else {
