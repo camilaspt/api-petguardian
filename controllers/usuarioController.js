@@ -2,10 +2,12 @@ const Usuario = require('../models/Usuario.js');
 const service = require('../services/usuarioService.js');
 const passwordService = require('../services/passwordService.js');
 const tokenAuthService = require('../services/tokenAuthService.js');
+const mail = require('../services/emailService.js');
 
 const createNewUser = async (req, res) => {
     try {
         const user = await service.crearUsuario(req.body);
+        mail.sendEmailNewUser(user.email, user.rol);
         res.status(201).json(user);
     } catch (error) {
         console.log("error")
