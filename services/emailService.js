@@ -1,13 +1,12 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // Se puede usar otros servicios como 'yahoo', 'hotmail', etc. por si queremos cambiar el mail.
+    service: 'gmail',
     auth: {
         user: 'petguardian.notifications@gmail.com', //contraseña : Zeballos1341
-        pass: 'hkyo zezq mjfe bglz' //contraseña de aplicacion: hkyo zezq mjfe bglz
+        pass: 'hkyo zezq mjfe bglz' //contraseña de aplicacion
     }
 });
-
 // Función para enviar correos electrónicos base.
 const sendEmail = (to, subject, text) => {
     const mailOptions = {
@@ -24,7 +23,6 @@ const sendEmail = (to, subject, text) => {
         console.log('Correo enviado: ' + info.response);
     });
 };
-
 // Función para enviar correos electrónicos de cambio de contraseña.
 const sendEmailPassword = (email, mensaje) => {
     const mailOptions = {
@@ -41,14 +39,14 @@ const sendEmailPassword = (email, mensaje) => {
         console.log('Correo enviado: ' + info.response);
     });
 };
-
 // Función para enviar correos electrónicos de cambio de estado de reserva.
-const sendEmailState = (email, estado) => {
+const sendEmailState = (emails, cuerpo) => {
+    const [numeroReserva, estado] = cuerpo.split(','); 
     const mailOptions = {
         from: '"PetGuardian" <petguardian.notifications@gmail.com>',
-        to: email, // Destinatario
+        to: emails.join(', '),
         subject: 'Una de tus Reservas cambio de Estado',
-        text: `El estado de tu reserva ha cambiado a: ${estado}`
+        text: `La reserva ${numeroReserva} cambio al estado: ${estado}`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -58,11 +56,11 @@ const sendEmailState = (email, estado) => {
         console.log('Correo enviado: ' + info.response);
     });
 };
-
+// Función para enviar correos electrónicos de nuevo usuario.
 const sendEmailNewUser = (email, rol) => {
     const mailOptions = {
         from: '"PetGuardian" <petguardian.notifications@gmail.com>',
-        to: email, // Destinatario
+        to: email,
         subject: 'Bienvenido a PetGuardian', 
         text: `Felicitaciones!!! Ahora sos ${rol} en PetGuardian` 
     };

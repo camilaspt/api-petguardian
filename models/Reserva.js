@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const AutoIncrement = require('mongoose-sequence')(mongoose);
+
 const ReservaSchema = new mongoose.Schema({
   fechaInicio: {
     type: Date,
@@ -10,24 +12,25 @@ const ReservaSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-
   tarifaTurno: {
     type: Number,
     required: true,
     trim: true,
   },
-
   comentario: {
     type: String,
     trim: true,
   },
-
-  usuario: {
+  cliente: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Usuario",
     required: true,
   },
-
+  cuidador: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+    required: true,
+  },
   mascotas: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -41,5 +44,7 @@ const ReservaSchema = new mongoose.Schema({
     required: true,
   },
 }, { timestamps: true }); 
+
+ReservaSchema.plugin(AutoIncrement, { inc_field: 'numeroReserva' });
 
 module.exports = mongoose.model("Reserva", ReservaSchema);

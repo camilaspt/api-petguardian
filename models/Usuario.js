@@ -58,6 +58,12 @@ const UsuarioSchema = new moongose.Schema({
     required: false,
     trim: true,
   },
+  tarifaHora: {
+    //Campo para cuidador
+    type: Number,
+    required: false,
+    trim: true,
+  },
   eliminado: {
         type: Boolean,
         default: false
