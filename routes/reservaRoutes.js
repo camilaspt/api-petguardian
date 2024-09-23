@@ -9,6 +9,6 @@ router.put('/:id', reservaController.editReserva);
 router.get('/reservasPorCliente/:id', reservaController.getReservasPorCliente);
 router.get('/reservasPorCuidador/:id', reservaController.getReservasPorCuidador);
 router.get('/:id', reservaController.getOneReserva);
-router.patch('/:idReserva/:idEstado', reservaController.updateReservaEstado);
+router.patch('/:idReserva/estado/:idEstado', reservaController.updateReservaEstado);
 
 module.exports = router;
