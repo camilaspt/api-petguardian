@@ -1,7 +1,7 @@
 const Reserva = require('../models/Reserva.js');
 const Estado = require('../models/Estado.js');
 const Usuario = require('../models/Usuario.js');
-const {sendEmailState} = require('../services/emailService.js');
+const {sendEmailState} = require('./emailService.js');
 
 const updateReservaEstado = async (idReserva, idEstado) => {
     try {

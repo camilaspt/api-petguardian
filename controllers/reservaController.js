@@ -1,6 +1,6 @@
 const Reserva = require('../models/Reserva.js');
 const Estado = require('../models/Estado.js');
-const serviceUpdate = require('../services/updateReservaEstado.js');
+const serviceUpdate = require('../services/updateReservaEstadoService.js');
 
 const getReservas = async (req, res) => {
     try {

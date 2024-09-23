@@ -1,10 +1,11 @@
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'petguardian.notifications@gmail.com', //contraseña : Zeballos1341
-        pass: 'hkyo zezq mjfe bglz' //contraseña de aplicacion
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD_EMAIL
     }
 });
 // Función para enviar correos electrónicos base.
