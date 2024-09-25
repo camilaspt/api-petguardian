@@ -17,3 +17,7 @@ app.use(router);
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });
+
+router.get('/', (req, res) => {
+  res.send('Bienvenido a la API de PetGuardian');
+});
