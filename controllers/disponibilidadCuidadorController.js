@@ -1,5 +1,4 @@
 const Disponibilidad = require('../models/DisponibilidadCuidador.js');
-const Cuidador = require('../models/Usuario.js');
 const service = require('../services/disponibilidadCuidadorService.js');
 
 const getDisponibilidadPorCuidador = async (req, res) => {
