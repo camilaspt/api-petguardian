@@ -7,8 +7,12 @@
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/"
+      "dest": "https://frontend-petguardian.vercel.app/$1"
     }
   ]
 }
