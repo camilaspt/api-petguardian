@@ -36,10 +36,6 @@ const UsuarioSchema = new moongose.Schema({
     enum: ["Cuidador Habilitado", "Cuidador No Habilitado", "Cuidador Pendiente", "Cliente", "Administrador"],
     trim: true,
   },
-  habilitado: {
-    type: Boolean,
-    default: false,
-  },
   contactoEmergencia: {
     //Campo para cliente
     type: Number,
