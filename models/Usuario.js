@@ -33,7 +33,7 @@ const UsuarioSchema = new moongose.Schema({
   rol: {
     type: String,
     required: true,
-    enum: ["Cuidador", "Cuidador No Habilitado", "Cliente", "Administrador"],
+    enum: ["Cuidador Habilitado", "Cuidador No Habilitado", "Cuidador Pendiente", "Cliente", "Administrador"],
     trim: true,
   },
   habilitado: {

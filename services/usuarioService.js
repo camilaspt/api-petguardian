@@ -11,7 +11,7 @@ const passwordService = require('./passwordService.js');
 
 const crearUsuario = async (usuario) => {
     try {
-        usuario.cuidador ? usuario.rol = "Cuidador" : usuario.rol = "Cliente";
+        usuario.cuidador ? usuario.rol = "Cuidador Pendiente" : usuario.rol = "Cliente";
         usuario.password = await passwordService.encriptPassword(usuario.password);
         const newUser = await Usuario.create(usuario);
         return newUser;
