@@ -93,13 +93,27 @@ const getOneUser = async (req, res) => {
     }
 }
 
-module.exports = {
-    createNewUser,
-    getUsers,
-    login,
-    deleteUser,
-    editUser,
-    getCuidadoresHabilitados,
-    getCuidadoresPendientes,
-    getOneUser
+const { cambiarRolUsuario } = require("../services/usuarioService");
+
+const cambiarRol = async (req, res) => {
+  const {userId, nuevoRol } = req.body;
+
+  try {
+    const resultado = await cambiarRolUsuario(userId, nuevoRol);
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 }
+
+module.exports = {
+  createNewUser,
+  getUsers,
+  login,
+  deleteUser,
+  editUser,
+  getCuidadoresHabilitados,
+  getCuidadoresPendientes,
+  getOneUser,
+  cambiarRol
+};
