@@ -65,16 +65,16 @@ const editUser = async (req, res) => {
     }
 }
 
-const getCuidadorHabilitado = async (req, res) => {
+const getCuidadoresHabilitados = async (req, res) => {
     try {
-        const users = await Usuario.find({rol: {$regex: /^cuidador$/i}, habilitado: true, eliminado: false});
+        const users = await Usuario.find({rol: {$regex: /^cuidador$/i}, habilitado: true, eliminado: false}).select('nombre email');
         res.status(200).json(users);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 }
 
-const getCuidadorNoHabilitado = async (req, res) => {
+const getCuidadoresPendientes = async (req, res) => {
     try {
         const users = await Usuario.find({rol: {$regex: /^cuidador$/i}, habilitado: false, eliminado: false});
         res.status(200).json(users);
@@ -99,7 +99,7 @@ module.exports = {
     login,
     deleteUser,
     editUser,
-    getCuidadorHabilitado,
-    getCuidadorNoHabilitado,
+    getCuidadoresHabilitados,
+    getCuidadoresPendientes,
     getOneUser
 }
