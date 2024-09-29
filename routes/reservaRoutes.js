@@ -6,8 +6,8 @@ router.get('/', reservaController.getReservas);
 router.post('/', reservaController.createReserva);
 router.delete('/:id', reservaController.deleteReserva);
 router.put('/:id', reservaController.editReserva);
-router.get('/reservasPorCliente/:id', reservaController.getReservasPorCliente);
-router.get('/reservasPorCuidador/:id', reservaController.getReservasPorCuidador);
+router.get('/reservas-por-cliente/:id', reservaController.getReservasPorCliente);
+router.get('/reservas-por-cuidador/:id', reservaController.getReservasPorCuidador);
 router.get('/:id', reservaController.getOneReserva);
 router.patch('/:idReserva/estado/:idEstado', reservaController.updateReservaEstado);
 
