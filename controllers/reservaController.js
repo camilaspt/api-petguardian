@@ -1,27 +1,35 @@
 const Reserva = require('../models/Reserva.js');
 const Estado = require('../models/Estado.js');
 const serviceUpdate = require('../services/updateReservaEstadoService.js');
+const reservaService = require("../services/reservaService");
 
 const getReservas = async (req, res) => {
-    try {
-        const reservas = await Reserva.find().populate('cliente', 'nombre').populate('cuidador', 'nombre').populate('mascotas', 'nombre').populate('estado', 'estado');
-        res.status(200).json(reservas);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-}
+  try {
+    const reservas = await reservaService.getReservas();
+    res.status(200).json(reservas);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 const createReserva = async (req, res) => {
-    try {
-        const { fechaInicio, fechaFin, comentario, tarifaTurno, cliente, cuidador, mascotas} = req.body;
-        const estado = await Estado.findOne({ estado: 'Pendiente' });
-        const newReserva = await Reserva.create({ fechaInicio, fechaFin, comentario, tarifaTurno, cliente, cuidador, mascotas, estado: estado._id});
-        res.status(201).json(newReserva);
-    } catch (error) {
-        console.log(error.message);
-        res.status(400).json({ message: error.message });
-    }
-}
+  try {
+    const clienteId = req.userId;
+    const { fechaInicio, fechaFin, comentario, cuidador, mascotas } = req.body;
+    const newReserva = await reservaService.createReserva({
+      fechaInicio,
+      fechaFin,
+      comentario,
+      clienteId,
+      cuidador,
+      mascotas,
+    });
+    res.status(201).json(newReserva);
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+};
 
 const deleteReserva = async (req, res) => {
     try {

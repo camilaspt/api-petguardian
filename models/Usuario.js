@@ -1,5 +1,5 @@
-const moongose = require("mongoose");
-const UsuarioSchema = new moongose.Schema(
+const mongoose = require("mongoose");
+const UsuarioSchema = new mongoose.Schema(
   {
     nombre: {
       type: String,
@@ -72,6 +72,7 @@ const UsuarioSchema = new moongose.Schema(
       type: Number,
       required: false,
       trim: true,
+      default: 0,
     },
     eliminado: {
       type: Boolean,
@@ -81,4 +82,4 @@ const UsuarioSchema = new moongose.Schema(
   { timestamps: true }
 ); 
 
-module.exports = moongose.model("Usuario", UsuarioSchema);
+module.exports = mongoose.model("Usuario", UsuarioSchema);

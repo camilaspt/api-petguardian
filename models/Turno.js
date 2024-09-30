@@ -10,5 +10,15 @@ const TurnoSchema = new mongoose.Schema({
     required: true,
   },
 });
+TurnoSchema.pre("save", async function (next) {
+  try {
+    await Reserva.findByIdAndUpdate(this.reserva, {
+      $inc: { contadorTurnos: 1 },
+    });
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = mongoose.model("Turno", TurnoSchema);

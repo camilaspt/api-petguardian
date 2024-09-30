@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const reservaController = require('../controllers/reservaController.js');
+const authMiddleware = require("../services/authMiddlewareService.js");
 
-router.get('/', reservaController.getReservas);
-router.post('/', reservaController.createReserva);
-router.delete('/:id', reservaController.deleteReserva);
-router.put('/:id', reservaController.editReserva);
-router.get('/reservas-por-cliente/:id', reservaController.getReservasPorCliente);
-router.get('/reservas-por-cuidador/:id', reservaController.getReservasPorCuidador);
-router.get('/:id', reservaController.getOneReserva);
-router.patch('/:idReserva/estado/:idEstado', reservaController.updateReservaEstado);
+router.get( "/", authMiddleware.verifyToken, authMiddleware.verifyAdmin, reservaController.getReservas); //get all reservas para el Informe de admin
+router.post('/',authMiddleware.verifyToken, authMiddleware.verifyCliente, reservaController.createReserva);
+router.delete('/:id',authMiddleware.verifyToken, authMiddleware.verifyAdmin, reservaController.deleteReserva); //posiblemente haya que borrarlo
+router.put('/:id',authMiddleware.verifyToken, reservaController.editReserva); //posiblemente haya que borrarlo
+router.get('/reservasPorCliente/:id',authMiddleware.verifyToken, authMiddleware.verifyCliente, reservaController.getReservasPorCliente);
+router.get('/reservasPorCuidador/:id',authMiddleware.verifyToken, authMiddleware.verifyCuidadorHabilitado, reservaController.getReservasPorCuidador);
+router.get('/:id',authMiddleware.verifyToken, reservaController.getOneReserva);
+router.patch('/:idReserva/estado/:idEstado', authMiddleware.verifyToken, reservaController.updateReservaEstado);
 
 module.exports = router;
