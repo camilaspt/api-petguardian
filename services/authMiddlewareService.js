@@ -22,6 +22,7 @@ const verifyAdmin = async (req, res, next) => {
     const userId = req.userId;
     const user = await Usuario.findById(userId);
     if (user && user.rol === "Administrador") {
+      console.log(`Usuario ${userId} tiene permisos.`);
       next();
     } else {
       res
@@ -35,5 +36,5 @@ const verifyAdmin = async (req, res, next) => {
 
 module.exports = {
   verifyAdmin,
-  verifyToken,
+  verifyToken
 };

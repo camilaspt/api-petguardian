@@ -1,5 +1,6 @@
 const Reser = require('../models/Reserva');
 const Resenia = require('../models/Resenia');
+const reseniaService = require('../services/reseniaService');
 
 const getResenias = async (req, res) => {
     try {
@@ -8,18 +9,18 @@ const getResenias = async (req, res) => {
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
-}
+};
 
 const createResenia = async (req, res) => {
-    try {
-        const { reserva, puntuacion, comentario } = req.body;
-        const newResenia = await Resenia.create({ reserva, puntuacion, comentario });
-        res.status(201).json(newResenia);
-    } catch (error) {
-        console.log(error.message);
-        res.status(400).json({ message: error.message });
-    }
-}
+  try {
+    const newResenia = await reseniaService.createResenia(req.body);
+    res.status(201).json(newResenia);
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+};
+
 
 const deleteResenia = async (req, res) => {
     try {

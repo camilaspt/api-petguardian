@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const reservaController = require('../controllers/reservaController.js');
+const authMiddleware = require("../services/authMiddlewareService.js");
 
-router.get('/', reservaController.getReservas);
+router.get("/",authMiddleware.verifyToken, authMiddleware.verifyAdmin, reservaController.getReservas);
 router.post('/', reservaController.createReserva);
 router.delete('/:id', reservaController.deleteReserva);
 router.put('/:id', reservaController.editReserva);

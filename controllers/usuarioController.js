@@ -76,7 +76,11 @@ const getCuidadoresHabilitados = async (req, res) => {
 
 const getCuidadoresPendientes = async (req, res) => {
     try {
-        const users = await Usuario.find({rol: "Cuidador Pendiente", eliminado: false});
+        const users = await Usuario.find({
+          rol: "Cuidador Pendiente",
+          eliminado: false,
+        }).select(
+          "nombre apellido telefono email domicilio");
         res.status(200).json(users);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -93,18 +97,33 @@ const getOneUser = async (req, res) => {
     }
 }
 
-const { cambiarRolUsuario } = require("../services/usuarioService");
-
 const cambiarRol = async (req, res) => {
   const {userId, nuevoRol } = req.body;
 
   try {
-    const resultado = await cambiarRolUsuario(userId, nuevoRol);
+    const resultado = await service.cambiarRolUsuario(userId, nuevoRol);
     res.status(200).json(resultado);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 }
+const getClientesConReservasPorEstado = async (req, res) => {
+  try {
+    const resultado = await service.obtenerClientesConReservasPorEstado();
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+const getCuidadoresConReservasPorEstado = async (req, res) => {
+  try {
+    const { cuidadores } =
+      await service.obtenerCuidadoresConReservasPorEstado();
+    res.status(200).json(cuidadores);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   createNewUser,
@@ -115,5 +134,7 @@ module.exports = {
   getCuidadoresHabilitados,
   getCuidadoresPendientes,
   getOneUser,
-  cambiarRol
+  cambiarRol,
+  getClientesConReservasPorEstado,
+  getCuidadoresConReservasPorEstado
 };

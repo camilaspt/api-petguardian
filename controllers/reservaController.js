@@ -1,15 +1,16 @@
 const Reserva = require('../models/Reserva.js');
 const Estado = require('../models/Estado.js');
 const serviceUpdate = require('../services/updateReservaEstadoService.js');
+const reservaService = require("../services/reservaService");
 
 const getReservas = async (req, res) => {
-    try {
-        const reservas = await Reserva.find().populate('cliente', 'nombre').populate('cuidador', 'nombre').populate('mascotas', 'nombre').populate('estado', 'estado');
-        res.status(200).json(reservas);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-}
+  try {
+    const reservas = await reservaService.getReservas();
+    res.status(200).json(reservas);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 const createReserva = async (req, res) => {
     try {

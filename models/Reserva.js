@@ -1,49 +1,56 @@
 const mongoose = require("mongoose");
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
-const ReservaSchema = new mongoose.Schema({
-  fechaInicio: {
-    type: Date,
-    required: true,
-    trim: true,
-  },
-  fechaFin: {
-    type: Date,
-    required: true,
-    trim: true,
-  },
-  tarifaTurno: {
-    type: Number,
-    required: true,
-    trim: true,
-  },
-  comentario: {
-    type: String,
-    trim: true,
-  },
-  cliente: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Usuario",
-    required: true,
-  },
-  cuidador: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Usuario",
-    required: true,
-  },
-  mascotas: [
-    {
+const ReservaSchema = new mongoose.Schema(
+  {
+    fechaInicio: {
+      type: Date,
+      required: true,
+      trim: true,
+    },
+    fechaFin: {
+      type: Date,
+      required: true,
+      trim: true,
+    },
+    tarifaTurno: {
+      type: Number,
+      required: true,
+      trim: true,
+    },
+    comentario: {
+      type: String,
+      trim: true,
+    },
+    cliente: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Mascota",
+      ref: "Usuario",
       required: true,
     },
-  ],
-  estado: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Estado",
-    required: true,
+    cuidador: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Usuario",
+      required: true,
+    },
+    mascotas: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Mascota",
+        required: true,
+      },
+    ],
+    estado: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Estado",
+      required: true,
+    },
+    contadorTurnos: {
+      type: Number,
+      default: 0,
+    },
   },
-}, { timestamps: true }); 
+  { timestamps: true }
+); 
 
 ReservaSchema.plugin(AutoIncrement, { inc_field: 'numeroReserva' });
 
