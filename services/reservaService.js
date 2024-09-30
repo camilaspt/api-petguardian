@@ -1,5 +1,44 @@
 const Reserva = require("../models/Reserva");
 const Turno = require("../models/Turno");
+const Usuario = require("../models/Usuario.js");
+const Estado = require("../models/Estado.js");
+
+const createReserva = async ({
+  fechaInicio,
+  fechaFin,
+  comentario,
+  clienteId,
+  cuidador,
+  mascotas,
+}) => {
+  try {
+    const estado = await Estado.findOne({ estado: "Pendiente" });
+    if (!estado) {
+      throw new Error("Estado 'Pendiente' no encontrado");
+    }
+
+    const cuidadorData = await Usuario.findById(cuidador);
+    if (!cuidadorData || cuidadorData.rol !== "Cuidador Habilitado") {
+      throw new Error("El cuidador no está habilitado");
+    }
+    const tarifaTurno = cuidadorData.tarifaHora;
+
+    const newReserva = new Reserva({
+      fechaInicio,
+      fechaFin,
+      comentario,
+      tarifaTurno,
+      cliente: clienteId,
+      cuidador,
+      mascotas,
+      estado: estado._id,
+    });
+
+    return await newReserva.save();
+  } catch (error) {
+    throw new Error("Error al crear la reserva: " + error.message);
+  }
+};
 
 // Función para obtener todas las reservas con sus turnos
 const getReservas = async () => {
@@ -32,4 +71,5 @@ const getReservas = async () => {
 };
 module.exports = {
   getReservas,
+  createReserva,
 };

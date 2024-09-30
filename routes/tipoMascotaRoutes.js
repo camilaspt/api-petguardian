@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const tipoMascotaController = require('../controllers/tipoMascotaController.js');
+const authMiddleware = require("../services/authMiddlewareService.js");
 
-router.get('/', tipoMascotaController.getTiposMascota);
-router.post('/', tipoMascotaController.createTipoMascota);
-router.delete('/:id', tipoMascotaController.deleteTipoMascota);
-router.put('/:id', tipoMascotaController.editTipoMascota);
+router.get( "/", authMiddleware.verifyToken, tipoMascotaController.getTiposMascota);
+router.post( "/", authMiddleware.verifyToken, authMiddleware.verifyAdmin, tipoMascotaController.createTipoMascota);
+router.delete( "/:id", authMiddleware.verifyToken, authMiddleware.verifyAdmin, tipoMascotaController.deleteTipoMascota);
+router.put( "/:id", authMiddleware.verifyToken, authMiddleware.verifyAdmin, tipoMascotaController.editTipoMascota);
 
 module.exports = router;

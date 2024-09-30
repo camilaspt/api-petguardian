@@ -1,7 +1,4 @@
 const Usuario = require('../models/Usuario.js');
-const Reserva = require("../models/Reserva.js");
-const Estado = require("../models/Estado.js");
-const mongoose = require("mongoose");
 const passwordService = require('./passwordService.js');
 const Resenia = require("../models/Resenia.js");
 //con este formato va a venir el usuario

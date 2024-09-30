@@ -1,13 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const reseniaController = require('../controllers/reseniaController.js');
+const authMiddleware = require("../services/authMiddlewareService.js");
 
-router.get('/', reseniaController.getResenias);
-router.post('/', reseniaController.createResenia);
-router.delete('/:id', reseniaController.deleteResenia);
-router.get('/:id', reseniaController.getOneResenia);
-router.get('/reseniaPorReserva/:id', reseniaController.getReseniaPorReserva);
-router.get('/reseniasPorUsuario/:id', reseniaController.getReseniasPorUsuario);
+router.get('/',authMiddleware.verifyToken, reseniaController.getResenias);
+router.post('/',authMiddleware.verifyToken, authMiddleware.verifyCliente, reseniaController.createResenia);
+router.delete('/:id', authMiddleware.verifyToken, reseniaController.deleteResenia);
+router.get("/:id", authMiddleware.verifyToken, reseniaController.getOneResenia);
+router.get('/reseniaPorReserva/:id', authMiddleware.verifyToken, reseniaController.getReseniaPorReserva);
+router.get( "/reseniasPorUsuario/:id", authMiddleware.verifyToken, reseniaController.getReseniasPorUsuario
+);
 
 
 module.exports = router;

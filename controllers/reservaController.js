@@ -13,16 +13,23 @@ const getReservas = async (req, res) => {
 };
 
 const createReserva = async (req, res) => {
-    try {
-        const { fechaInicio, fechaFin, comentario, tarifaTurno, cliente, cuidador, mascotas} = req.body;
-        const estado = await Estado.findOne({ estado: 'Pendiente' });
-        const newReserva = await Reserva.create({ fechaInicio, fechaFin, comentario, tarifaTurno, cliente, cuidador, mascotas, estado: estado._id});
-        res.status(201).json(newReserva);
-    } catch (error) {
-        console.log(error.message);
-        res.status(400).json({ message: error.message });
-    }
-}
+  try {
+    const clienteId = req.userId;
+    const { fechaInicio, fechaFin, comentario, cuidador, mascotas } = req.body;
+    const newReserva = await reservaService.createReserva({
+      fechaInicio,
+      fechaFin,
+      comentario,
+      clienteId,
+      cuidador,
+      mascotas,
+    });
+    res.status(201).json(newReserva);
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+};
 
 const deleteReserva = async (req, res) => {
     try {
