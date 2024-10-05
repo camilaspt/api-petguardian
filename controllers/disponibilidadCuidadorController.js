@@ -12,14 +12,18 @@ const getDisponibilidadPorCuidador = async (req, res) => {
 }
 
 const createDisponibilidad = async (req, res) => {
-    try {
-        const newDisponibilidad = await service.crearDisponibilidad(req.body);
-        res.status(201).json(newDisponibilidad);
-    } catch (error) {
-        console.log(error.message);
-        res.status(400).json({ message: error.message });
-    }
-}
+  try {
+    const idCuidador = req.userId; // Asignar el id del cuidador desde el usuario autenticado
+    const disponibilidadData = { ...req.body, cuidador: idCuidador };
+    const newDisponibilidad = await service.crearDisponibilidad(
+      disponibilidadData
+    );
+    res.status(201).json(newDisponibilidad);
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+};
 
 const deleteDisponibilidad = async (req, res) => {
     try {

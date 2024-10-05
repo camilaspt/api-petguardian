@@ -3,9 +3,9 @@ const router = express.Router();
 const usuarioController = require('../controllers/usuarioController.js');
 const authMiddleware = require("../services/authMiddlewareService.js");
 
+router.post("/login", usuarioController.login);
+router.post("/", usuarioController.createNewUser);
 router.get('/', authMiddleware.verifyToken, usuarioController.getUsers);
-router.post('/', usuarioController.createNewUser);
-router.post('/login', usuarioController.login);
 router.delete('/delete/:id', authMiddleware.verifyToken, usuarioController.deleteUser);
 router.put('/update/:id', authMiddleware.verifyToken, usuarioController.editUser);
 //router.put('/update-password/:id', usuarioController.editPassword);

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Reserva = require("./Reserva");
 const TurnoSchema = new mongoose.Schema({
   fechaHoraInicio: {
     type: Date,
