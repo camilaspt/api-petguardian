@@ -53,8 +53,8 @@ const createReserva = async ({
       const turnoDate = new Date(startDate);
       turnoDate.setDate(turnoDate.getDate() + i);
       turnoDate.setHours(
-        parseInt(horaTurno.split(":")[0]),
-        parseInt(horaTurno.split(":")[1]),
+        parseInt(horaTurno),
+        parseInt(horaTurno),
         0,
         0
       ); // Establecer la hora del turno
