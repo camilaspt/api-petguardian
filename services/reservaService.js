@@ -90,7 +90,7 @@ const getReservas = async () => {
   try {
     const reservas = await Reserva.find()
       .populate("cliente", "nombre")
-      .populate("cuidador", "nombre")
+      .populate("cuidador", "nombre apellido telefono")
       .populate("estado", "estado")
       .select("fechaInicio fechaFin contadorTurnos tarifaTurno");
 

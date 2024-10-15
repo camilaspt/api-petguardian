@@ -1,6 +1,6 @@
-const Reserva = require('../models/Reserva.js');
-const Estado = require('../models/Estado.js');
-const serviceUpdate = require('../services/updateReservaEstadoService.js');
+const Reserva = require("../models/Reserva.js");
+const Estado = require("../models/Estado.js");
+const serviceUpdate = require("../services/updateReservaEstadoService.js");
 const reservaService = require("../services/reservaService");
 
 // Función para obtener todas las reservas con sus turnos, con time zone de argentina, en la BD esta guardado con +00:00 por defecto
@@ -14,8 +14,8 @@ const getReservas = async (req, res) => {
 };
 
 // createReserva: Crea unna reserva y sus turnos asociados
-  //no valida los turnos, eso se valida en la función getDisponibilidadCuidador de turnoService, el cliente seleccionaría directamente de ese array de horas disponibles
-  // Las reservas son con días consecutivos, se crea un turno de una hora para cada día al mimos horario. 
+//no valida los turnos, eso se valida en la función getDisponibilidadCuidador de turnoService, el cliente seleccionaría directamente de ese array de horas disponibles
+// Las reservas son con días consecutivos, se crea un turno de una hora para cada día al mimos horario.
 const createReserva = async (req, res) => {
   try {
     const clienteId = req.userId;
@@ -38,71 +38,92 @@ const createReserva = async (req, res) => {
 };
 
 const deleteReserva = async (req, res) => {
-    try {
-        const idReserva = req.params.id;
-        const reserva = await Reserva.findById(idReserva);
-        const estado = await Estado.findOne({ estado: 'Pendiente' });
-        if (reserva.estado != estado._id) {
-            return res.status(400).json({ message: 'No se puede eliminar una reserva que no esté en estado Pendiente' });
-        }
-        const result = await Reserva.deleteOne({_id:idReserva});
-        res.status(200).json(result); 
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+  try {
+    const idReserva = req.params.id;
+    const reserva = await Reserva.findById(idReserva);
+    const estado = await Estado.findOne({ estado: "Pendiente" });
+    if (reserva.estado != estado._id) {
+      return res
+        .status(400)
+        .json({
+          message:
+            "No se puede eliminar una reserva que no esté en estado Pendiente",
+        });
     }
-}
+    const result = await Reserva.deleteOne({ _id: idReserva });
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 const editReserva = async (req, res) => {
-    try {
-        const idReserva = req.params.id;
-        const {tarifaTurno, comentario, mascotas } = req.body;
-        const result = await Reserva.updateOne({_id:idReserva}, {tarifaTurno, comentario, mascotas });
-        res.status(200).json(result);
-    }   catch (error) {
-        res.status(400).json({ message: error.message });
-    } 
-}
+  try {
+    const idReserva = req.params.id;
+    const { tarifaTurno, comentario, mascotas } = req.body;
+    const result = await Reserva.updateOne(
+      { _id: idReserva },
+      { tarifaTurno, comentario, mascotas }
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 // para obtener las reservas de un cliente, para su gestión de reservas
 const getReservasPorCliente = async (req, res) => {
-    try {
-        const idCliente = req.params.id;
-        const reservas = await Reserva.find({cliente: idCliente}).populate('cuidador', 'nombre').populate('mascotas', 'nombre').populate('estado', 'estado');
-        res.status(200).json(reservas);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-}
+  try {
+    const idCliente = req.params.id;
+    const reservas = await Reserva.find({ cliente: idCliente })
+      .populate("cuidador", "nombre apellido telefono")
+      .populate("mascotas", "nombre")
+      .populate("estado", "estado");
+    res.status(200).json(reservas);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 // para obtener las reservas de un cuidador, para su gestión de reservas
 const getReservasPorCuidador = async (req, res) => {
-    try {
-        const idCuidador = req.params.id;
-        const reservas = await Reserva.find({cuidador: idCuidador}).populate('cliente', 'nombre').populate('mascotas', 'nombre').populate('estado', 'estado');
-        res.status(200).json(reservas);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-}
+  try {
+    const idCuidador = req.params.id;
+    const reservas = await Reserva.find({ cuidador: idCuidador })
+      .populate("cliente", "nombre")
+      .populate("mascotas", "nombre")
+      .populate("estado", "estado");
+    res.status(200).json(reservas);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 const getOneReserva = async (req, res) => {
-    try {
-        const idReserva = req.params.id;
-        const reserva = await Reserva.findById(idReserva).populate('cliente', 'nombre').populate('cuidador', 'nombre').populate('mascotas', 'nombre').populate('estado', 'estado');
-        res.status(200).json(reserva);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-}
+  try {
+    const idReserva = req.params.id;
+    const reserva = await Reserva.findById(idReserva)
+      .populate("cliente", "nombre")
+      .populate("cuidador", "nombre")
+      .populate("mascotas", "nombre")
+      .populate("estado", "estado");
+    res.status(200).json(reserva);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 const updateReservaEstado = async (req, res) => {
-    try {
-        const idReserva = req.params.idReserva;
-        const idEstado = req.params.idEstado;
-        const reserva = await serviceUpdate.updateReservaEstado(idReserva, idEstado);
-        res.status(200).json(reserva);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-}
+  try {
+    const idReserva = req.params.idReserva;
+    const idEstado = req.params.idEstado;
+    const reserva = await serviceUpdate.updateReservaEstado(
+      idReserva,
+      idEstado
+    );
+    res.status(200).json(reserva);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 const getReservasCuidadorEnRango = async (req, res) => {
   try {
@@ -120,24 +141,24 @@ const getReservasCuidadorEnRango = async (req, res) => {
 };
 
 const cancelarReserva = async (req, res) => {
-    try {
-        const idReserva = req.params.idReserva;
-        const reservaCancelada = await serviceUpdate.cancelarReserva(idReserva);
-        res.status(200).json(reservaCancelada); 
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-}
+  try {
+    const idReserva = req.params.idReserva;
+    const reservaCancelada = await serviceUpdate.cancelarReserva(idReserva);
+    res.status(200).json(reservaCancelada);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 module.exports = {
-    getReservas,
-    createReserva,
-    deleteReserva,
-    editReserva,
-    getReservasPorCliente,
-    getReservasPorCuidador,
-    getOneReserva,
-    updateReservaEstado,
-    getReservasCuidadorEnRango,
-    cancelarReserva
-}
+  getReservas,
+  createReserva,
+  deleteReserva,
+  editReserva,
+  getReservasPorCliente,
+  getReservasPorCuidador,
+  getOneReserva,
+  updateReservaEstado,
+  getReservasCuidadorEnRango,
+  cancelarReserva,
+};
