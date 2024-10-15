@@ -11,5 +11,6 @@ router.get('/reservasPorCliente/:id',authMiddleware.verifyToken, authMiddleware.
 router.get('/reservasPorCuidador/:id',authMiddleware.verifyToken, authMiddleware.verifyCuidadorHabilitado, reservaController.getReservasPorCuidador);
 router.get('/:id',authMiddleware.verifyToken, reservaController.getOneReserva);
 router.patch('/:idReserva/estado/:idEstado', authMiddleware.verifyToken, reservaController.updateReservaEstado);
+router.put('/cancelar/:idReserva', authMiddleware.verifyToken, reservaController.cancelarReserva);
 
 module.exports = router;

@@ -119,6 +119,16 @@ const getReservasCuidadorEnRango = async (req, res) => {
   }
 };
 
+const cancelarReserva = async (req, res) => {
+    try {
+        const idReserva = req.params.idReserva;
+        const reservaCancelada = await serviceUpdate.cancelarReserva(idReserva);
+        res.status(200).json(reservaCancelada); 
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 module.exports = {
     getReservas,
     createReserva,
@@ -128,5 +138,6 @@ module.exports = {
     getReservasPorCuidador,
     getOneReserva,
     updateReservaEstado,
-    getReservasCuidadorEnRango
+    getReservasCuidadorEnRango,
+    cancelarReserva
 }

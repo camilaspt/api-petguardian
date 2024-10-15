@@ -27,6 +27,26 @@ const updateReservaEstado = async (idReserva, idEstado) => {
     }
 }
 
+const cancelarReserva = async (idReserva) => {
+    try {
+        const reserva = await Reserva.findById(idReserva);
+        if (!reserva) {
+            return res.status(404).json({ message: 'Reserva no encontrada' });
+        }
+        const estadoNuevo = await Estado.findOne({ estado: 'Cancelada' });
+        if (!estadoNuevo) {
+            return res.status(404).json({ message: 'Estado no encontrado' });
+        }
+        reserva.estado = estadoNuevo._id;
+        await reserva.save();
+        return reserva;
+    } catch (error) {
+        console.log(error)
+        throw new Error(error.message);
+    }
+}
+
 module.exports = {
-    updateReservaEstado
+    updateReservaEstado,
+    cancelarReserva
 }
