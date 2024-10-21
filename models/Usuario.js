@@ -31,6 +31,11 @@ const UsuarioSchema = new mongoose.Schema(
       required: false,
       trim: true,
     },
+    imagenPerfil: {
+      type: String,
+      required: false,
+      trim: true
+    },
     rol: {
       type: String,
       required: true,

@@ -1,21 +1,66 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const usuarioController = require('../controllers/usuarioController.js');
+const Usuario = require("../models/Usuario.js");
+const usuarioController = require("../controllers/usuarioController.js");
 const authMiddleware = require("../services/authMiddlewareService.js");
+const multer = require('multer');
+const upload = require('../utils/cloudinaryConfig.js').upload;
 
 router.post("/login", usuarioController.login);
 router.post("/", usuarioController.createNewUser);
-router.get('/', authMiddleware.verifyToken, usuarioController.getUsers);
-router.delete('/:id', authMiddleware.verifyToken, usuarioController.deleteUser);
-router.put('/:id', authMiddleware.verifyToken, usuarioController.editUser);
+router.get("/", authMiddleware.verifyToken, usuarioController.getUsers);
+router.delete("/:id", authMiddleware.verifyToken, usuarioController.deleteUser);
+router.put("/:id", authMiddleware.verifyToken, usuarioController.editUser);
 //router.put('/update-password/:id', usuarioController.editPassword);
-router.get('/cuidadores-habilitados/', authMiddleware.verifyToken, usuarioController.getCuidadoresHabilitados);
-router.get('/cuidadores-pendientes/',authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.getCuidadoresPendientes);
-router.get( "/clientes-con-reservas", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.getClientesConReservasPorEstado);
-router.post("/cambiar-rol", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.cambiarRol);
-router.get("/cuidadores-con-reservas", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.getCuidadoresConReservasPorEstado);
-router.get('/:id', authMiddleware.verifyToken, usuarioController.getOneUser);
+router.get(
+  "/cuidadores-habilitados/",
+  authMiddleware.verifyToken,
+  usuarioController.getCuidadoresHabilitados
+);
+router.get(
+  "/cuidadores-pendientes/",
+  authMiddleware.verifyToken,
+  authMiddleware.verifyAdmin,
+  usuarioController.getCuidadoresPendientes
+);
+router.get(
+  "/clientes-con-reservas",
+  authMiddleware.verifyToken,
+  authMiddleware.verifyAdmin,
+  usuarioController.getClientesConReservasPorEstado
+);
+router.post(
+  "/cambiar-rol",
+  authMiddleware.verifyToken,
+  authMiddleware.verifyAdmin,
+  usuarioController.cambiarRol
+);
+router.get(
+  "/cuidadores-con-reservas",
+  authMiddleware.verifyToken,
+  authMiddleware.verifyAdmin,
+  usuarioController.getCuidadoresConReservasPorEstado
+);
+router.get("/:id",authMiddleware.verifyToken, usuarioController.getOneUser);
+// Ruta para cargar una imagen de perfil
+router.post("/upload/:id", upload.single('file'), async (req, res) => {
+  try {
+    console.log(req);
+    console.log("req.file", req.file); // Log para ver el archivo recibido
+    console.log("req.body", req.body); 
+    const imagenUrl = req.file.path; // URL de la imagen en Cloudinary
+    const usuarioId = req.params.id;
+    // Actualizar el usuario con la URL de la imagen
+    const usuario = await Usuario.findByIdAndUpdate(
+      usuarioId,
+      { imagenPerfil: imagenUrl },
+      { new: true }
+    );
 
-
+    res.status(200).json({ message: "Imagen cargada exitosamente", usuario });
+  } catch (error) {
+    res.status(500).json({ message: "Error al cargar la imagen", error });
+  }
+});
 
 module.exports = router;
