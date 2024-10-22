@@ -115,6 +115,7 @@ const getClientesConReservasPorEstado = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const getCuidadoresConReservasPorEstado = async (req, res) => {
   try {
     const { cuidadores } =
@@ -124,6 +125,23 @@ const getCuidadoresConReservasPorEstado = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+const guardarImagenPerfil = async (req, res) => {
+    try {
+        const imagenUrl = req.file.path; // URL de la imagen en Cloudinary
+        const usuarioId = req.params.id;
+        // Actualizar el usuario con la URL de la imagen
+        const usuario = await Usuario.findByIdAndUpdate(
+          usuarioId,
+          { imagenPerfil: imagenUrl },
+          { new: true }
+        );
+        res.status(200).json({ message: "Imagen cargada exitosamente", usuario });
+      } catch (error) {
+        res.status(500).json({ message: "Error al cargar la imagen", error });
+      }
+}
+
 
 module.exports = {
   createNewUser,
@@ -136,5 +154,6 @@ module.exports = {
   getOneUser,
   cambiarRol,
   getClientesConReservasPorEstado,
-  getCuidadoresConReservasPorEstado
+  getCuidadoresConReservasPorEstado,
+  guardarImagenPerfil
 };

@@ -35,6 +35,10 @@ const MascotaSchema = new mongoose.Schema({
     eliminado: {
         type: Boolean,
         default: false
+    },
+    urlImagen: {
+        type: String,
+        required: false
     }
 }, { timestamps: true }); 
 

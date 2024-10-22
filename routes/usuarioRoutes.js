@@ -41,26 +41,8 @@ router.get(
   authMiddleware.verifyAdmin,
   usuarioController.getCuidadoresConReservasPorEstado
 );
-router.get("/:id",authMiddleware.verifyToken, usuarioController.getOneUser);
+router.get("/:id", authMiddleware.verifyToken, usuarioController.getOneUser);
 // Ruta para cargar una imagen de perfil
-router.post("/upload/:id", upload.single('file'), async (req, res) => {
-  try {
-    console.log(req);
-    console.log("req.file", req.file); // Log para ver el archivo recibido
-    console.log("req.body", req.body); 
-    const imagenUrl = req.file.path; // URL de la imagen en Cloudinary
-    const usuarioId = req.params.id;
-    // Actualizar el usuario con la URL de la imagen
-    const usuario = await Usuario.findByIdAndUpdate(
-      usuarioId,
-      { imagenPerfil: imagenUrl },
-      { new: true }
-    );
-
-    res.status(200).json({ message: "Imagen cargada exitosamente", usuario });
-  } catch (error) {
-    res.status(500).json({ message: "Error al cargar la imagen", error });
-  }
-});
+router.post("/upload/:id", authMiddleware.verifyToken, upload.single('file'), usuarioController.guardarImagenPerfil);
 
 module.exports = router;
