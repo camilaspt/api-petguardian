@@ -67,7 +67,7 @@ const editUser = async (req, res) => {
 
 const getCuidadoresHabilitados = async (req, res) => {
     try {
-        const users = await Usuario.find({rol: "Cuidador Habilitado", eliminado: false}).select('nombre apellido telefono email descripcionPersonal tarifaHora promedioPuntuacion');
+        const users = await Usuario.find({rol: "Cuidador Habilitado", eliminado: false}).select('nombre apellido telefono email descripcionPersonal tarifaHora promedioPuntuacion imagenPerfil');
         res.status(200).json(users);
     } catch (error) {
         res.status(400).json({ message: error.message });
