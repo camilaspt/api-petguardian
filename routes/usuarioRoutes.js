@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const   router = express.Router();
 const usuarioController = require("../controllers/usuarioController.js");
 const authMiddleware = require("../services/authMiddlewareService.js");
 const upload = require('../utils/cloudinaryConfig.js').upload;
@@ -42,5 +42,7 @@ router.get(
 router.get("/:id", authMiddleware.verifyToken, usuarioController.getOneUser);
 // Ruta para cargar una imagen de perfil
 router.post("/upload/:id", authMiddleware.verifyToken, upload.single('file'), usuarioController.guardarImagenPerfil);
+router.put("/habilitar-cuidador/:id", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.habilitarCuidador);
+router.put("/desaprobar-cuidador/:id", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.desaprobarCuidador);
 
 module.exports = router;

@@ -283,7 +283,39 @@ const calcularPromedioPuntuacion = async (cuidadorId, nuevaPuntuacion) => {
   }
 };
 
+const habilitarCuidador = async (cuidadorId) => {
+  try {
+    console.log("Habilitando cuidador con ID:", cuidadorId);
+    const cuidador = await Usuario.findById(cuidadorId);
+    if (!cuidador || cuidador.rol !== "Cuidador Pendiente") {
+      throw new Error("El usuario no es un Cuidador Pendiente.");
+    }
 
+    cuidador.rol = "Cuidador Habilitado";
+    await cuidador.save();
+
+    return { message: "Cuidador habilitado correctamente." };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+const desaprobarCuidador = async (cuidadorId) => {
+  try {
+    console.log("Desaprobando cuidador con ID:", cuidadorId);
+    const cuidador = await Usuario.findById(cuidadorId);
+    if (!cuidador || cuidador.rol !== "Cuidador Pendiente") {
+      throw new Error("El usuario no es un Cuidador Pendiente.");
+    }
+
+    cuidador.rol = "Cuidador No Habilitado";
+    await cuidador.save();
+
+    return { message: "Cuidador desaprobado correctamente." };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
 
 module.exports = {
   crearUsuario,
@@ -291,4 +323,6 @@ module.exports = {
   obtenerClientesConReservasPorEstado,
   obtenerCuidadoresConReservasPorEstado,
   calcularPromedioPuntuacion,
+  habilitarCuidador,
+  desaprobarCuidador
 };

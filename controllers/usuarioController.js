@@ -107,6 +107,7 @@ const cambiarRol = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 }
+
 const getClientesConReservasPorEstado = async (req, res) => {
   try {
     const resultado = await service.obtenerClientesConReservasPorEstado();
@@ -142,6 +143,27 @@ const guardarImagenPerfil = async (req, res) => {
       }
 }
 
+const habilitarCuidador = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        console.log(userId);
+        const resultado = await service.habilitarCuidador(userId);
+        res.status(200).json(resultado);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+const desaprobarCuidador = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        console.log(userId);
+        const resultado = await service.desaprobarCuidador(userId);
+        res.status(200).json(resultado);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
 
 module.exports = {
   createNewUser,
@@ -155,5 +177,7 @@ module.exports = {
   cambiarRol,
   getClientesConReservasPorEstado,
   getCuidadoresConReservasPorEstado,
-  guardarImagenPerfil
+  guardarImagenPerfil,
+  habilitarCuidador,
+  desaprobarCuidador
 };
