@@ -5,6 +5,8 @@ const connection = require('./config/conectarDB.js');
 const cors = require('cors');
 const port = process.env.PORT || 3000;
 const router = require('./routes/routes.js');
+const tareaProgramada = require('./utils/tareaProgramada.js');
+
 require('dotenv').config();
 
 connection.conectarDB();
@@ -19,6 +21,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 app.listen(port, () => {
+  tareaProgramada.programarUpdateReservas();
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });
 

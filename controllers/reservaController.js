@@ -88,7 +88,7 @@ const getReservasPorCuidador = async (req, res) => {
   try {
     const idCuidador = req.params.id;
     const reservas = await Reserva.find({ cuidador: idCuidador })
-      .populate("cliente", "nombre")
+      .populate("cliente", "nombre apellido telefono")
       .populate("mascotas", "nombre")
       .populate("estado", "estado");
     res.status(200).json(reservas);
