@@ -153,9 +153,10 @@ const cancelarReserva = async (req, res) => {
 const aprobarReserva = async (req, res) => {
   try {
     const idReserva = req.params.idReserva;
-    const reservaAprobada = await serviceUpdate.aprobarReserva(idReserva);
+    const reservaAprobada = await reservaService.aprobarReserva(idReserva);
     res.status(200).json(reservaAprobada);
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({ message: error.message });
   }
 }
@@ -163,7 +164,7 @@ const aprobarReserva = async (req, res) => {
 const rechazarReserva = async (req, res) => {
   try {
     const idReserva = req.params.idReserva;
-    const reservaRechazada = await serviceUpdate.rechazarReserva(idReserva);
+    const reservaRechazada = await reservaService.rechazarReserva(idReserva);
     res.status(200).json(reservaRechazada);
   } catch (error) {
     res.status(400).json({ message: error.message });
