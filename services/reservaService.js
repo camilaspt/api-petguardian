@@ -175,9 +175,45 @@ const updateReservasFinalizadas = async () => {
   }
 };
 
+const aprobarReserva = async (idReserva) => {
+  const estadoAprobada = await Estado.findOne({ estado: "Aprobada" });
+  if (!estadoAprobada) {
+    throw new Error("Estado 'Aprobada' no encontrado");
+  }
+
+  const reserva = await Reserva.findById(idReserva);
+  if (!reserva) {
+    throw new Error("Reserva no encontrada");
+  }
+
+  reserva.estado = estadoAprobada._id;
+  await reserva.save();
+
+  return reserva;
+}
+
+const rechazarReserva = async (idReserva) => {
+  const estadoNoAprobada = await Estado.findOne({ estado: "No aprobada" });
+  if (!estadoNoAprobada) {
+    throw new Error("Estado 'No aprobada' no encontrado");
+  }
+
+  const reserva = await Reserva.findById(idReserva);
+  if (!reserva) {
+    throw new Error("Reserva no encontrada");
+  }
+
+  reserva.estado = estadoNoAprobada._id;
+  await reserva.save();
+
+  return reserva;
+}
+
 module.exports = {
   getReservas,
   createReserva,
   getReservasCuidadorEnRango,
-  updateReservasFinalizadas
+  updateReservasFinalizadas,
+  aprobarReserva,
+  rechazarReserva
 };

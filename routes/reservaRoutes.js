@@ -11,6 +11,8 @@ router.get('/reservasPorCliente/:id',authMiddleware.verifyToken, authMiddleware.
 router.get('/reservasPorCuidador/:id',authMiddleware.verifyToken, authMiddleware.verifyCuidadorHabilitado, reservaController.getReservasPorCuidador);
 router.get('/:id',authMiddleware.verifyToken, reservaController.getOneReserva);
 router.patch('/:idReserva/estado/:idEstado', authMiddleware.verifyToken, reservaController.updateReservaEstado);
-router.put('/cancelar/:idReserva', authMiddleware.verifyToken, reservaController.cancelarReserva);
+router.put('/cancelar/:idReserva', authMiddleware.verifyToken, authMiddleware.verifyCliente, reservaController.cancelarReserva);
+router.put('/aprobar/:idReserva', authMiddleware.verifyToken, authMiddleware.verifyCuidadorHabilitado, reservaController.aprobarReserva);
+router.put('/rechazar/:idReserva', authMiddleware.verifyToken, authMiddleware.verifyCuidadorHabilitado, reservaController.rechazarrReserva);
 
 module.exports = router;
