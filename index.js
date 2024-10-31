@@ -1,9 +1,12 @@
 
-const express = require('express'); 
+const express = require('express');
+const multer = require('multer');
 const connection = require('./config/conectarDB.js');
 const cors = require('cors');
 const port = process.env.PORT || 3000;
 const router = require('./routes/routes.js');
+const tareaProgramada = require('./utils/tareaProgramada.js');
+
 require('dotenv').config();
 
 connection.conectarDB();
@@ -13,8 +16,12 @@ app.use(express.json());
 app.use(cors());
 app.use(router); 
 
+// Configuración de multer
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 app.listen(port, () => {
+  tareaProgramada.programarUpdateReservas();
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });
 

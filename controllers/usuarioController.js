@@ -67,7 +67,7 @@ const editUser = async (req, res) => {
 
 const getCuidadoresHabilitados = async (req, res) => {
     try {
-        const users = await Usuario.find({rol: "Cuidador Habilitado", eliminado: false}).select('nombre apellido telefono email descripcionPersonal tarifaHora promedioPuntuacion');
+        const users = await Usuario.find({rol: "Cuidador Habilitado", eliminado: false}).select('nombre apellido telefono email descripcionPersonal tarifaHora promedioPuntuacion imagenPerfil');
         res.status(200).json(users);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -107,6 +107,7 @@ const cambiarRol = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 }
+
 const getClientesConReservasPorEstado = async (req, res) => {
   try {
     const resultado = await service.obtenerClientesConReservasPorEstado();
@@ -115,6 +116,7 @@ const getClientesConReservasPorEstado = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const getCuidadoresConReservasPorEstado = async (req, res) => {
   try {
     const { cuidadores } =
@@ -124,6 +126,44 @@ const getCuidadoresConReservasPorEstado = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+const guardarImagenPerfil = async (req, res) => {
+    try {
+        const imagenUrl = req.file.path; // URL de la imagen en Cloudinary
+        const usuarioId = req.params.id;
+        // Actualizar el usuario con la URL de la imagen
+        const usuario = await Usuario.findByIdAndUpdate(
+          usuarioId,
+          { imagenPerfil: imagenUrl },
+          { new: true }
+        );
+        res.status(200).json({ message: "Imagen cargada exitosamente", usuario });
+      } catch (error) {
+        res.status(500).json({ message: "Error al cargar la imagen", error });
+      }
+}
+
+const habilitarCuidador = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        console.log(userId);
+        const resultado = await service.habilitarCuidador(userId);
+        res.status(200).json(resultado);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+const desaprobarCuidador = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        console.log(userId);
+        const resultado = await service.desaprobarCuidador(userId);
+        res.status(200).json(resultado);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
 
 module.exports = {
   createNewUser,
@@ -136,5 +176,8 @@ module.exports = {
   getOneUser,
   cambiarRol,
   getClientesConReservasPorEstado,
-  getCuidadoresConReservasPorEstado
+  getCuidadoresConReservasPorEstado,
+  guardarImagenPerfil,
+  habilitarCuidador,
+  desaprobarCuidador
 };

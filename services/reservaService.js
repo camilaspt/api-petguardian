@@ -53,8 +53,8 @@ const createReserva = async ({
       const turnoDate = new Date(startDate);
       turnoDate.setDate(turnoDate.getDate() + i);
       turnoDate.setHours(
-        parseInt(horaTurno.split(":")[0]),
-        parseInt(horaTurno.split(":")[1]),
+        parseInt(horaTurno),
+        parseInt(horaTurno),
         0,
         0
       ); // Establecer la hora del turno
@@ -94,6 +94,7 @@ const getReservas = async ({
   precio,
 }) => {
   try {
+<<<<<<< HEAD
     const query = {};
 
     if (search) {
@@ -170,6 +171,11 @@ const getReservas = async ({
     const reservas = await Reserva.find(query)
       .populate("cliente", "nombre")
       .populate("cuidador", "nombre")
+=======
+    const reservas = await Reserva.find()
+      .populate("cliente", "nombre apellido telefono")
+      .populate("cuidador", "nombre apellido telefono")
+>>>>>>> ad13a80e9ac5923d0299f6cafac026270ec931f9
       .populate("estado", "estado")
       .select("fechaInicio fechaFin contadorTurnos tarifaTurno");
 
@@ -240,8 +246,67 @@ const getReservasCuidadorEnRango = async (
     );
   }
 };
+
+const updateReservasFinalizadas = async () => {
+  const estadoAprobada = await Estado.findOne({ estado: "Aprobada" });
+  const estadoFinalizada = await Estado.findOne({ estado: "Finalizada" });
+
+  if (!estadoAprobada || !estadoFinalizada) {
+    throw new Error("Estados 'Aprobada' o 'Finalizada' no encontrados");
+  }
+
+  const today = new Date();
+
+  const reservasAprobadas = await Reserva.find({
+    estado: estadoAprobada._id,
+    fechaFin: { $lt: today },
+  });
+
+  for (const reserva of reservasAprobadas) {
+    reserva.estado = estadoFinalizada._id;
+    await reserva.save();
+  }
+};
+
+const aprobarReserva = async (idReserva) => {
+  const estadoAprobada = await Estado.findOne({ estado: "Aprobada" });
+  if (!estadoAprobada) {
+    throw new Error("Estado 'Aprobada' no encontrado");
+  }
+
+  const reserva = await Reserva.findById(idReserva);
+  if (!reserva) {
+    throw new Error("Reserva no encontrada");
+  }
+
+  reserva.estado = estadoAprobada._id;
+  await reserva.save();
+
+  return reserva;
+}
+
+const rechazarReserva = async (idReserva) => {
+  const estadoNoAprobada = await Estado.findOne({ estado: "No aprobada" });
+  if (!estadoNoAprobada) {
+    throw new Error("Estado 'No aprobada' no encontrado");
+  }
+
+  const reserva = await Reserva.findById(idReserva);
+  if (!reserva) {
+    throw new Error("Reserva no encontrada");
+  }
+
+  reserva.estado = estadoNoAprobada._id;
+  await reserva.save();
+
+  return reserva;
+}
+
 module.exports = {
   getReservas,
   createReserva,
   getReservasCuidadorEnRango,
+  updateReservasFinalizadas,
+  aprobarReserva,
+  rechazarReserva
 };

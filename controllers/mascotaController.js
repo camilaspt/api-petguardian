@@ -62,11 +62,29 @@ const getOneMascota = async (req, res) => {
     }
 }
 
+const guardarImagenMascota = async (req, res) => {
+    try {
+        const urlImagen = req.file.path; // URL de la imagen en Cloudinary
+        const mascotaId = req.params.id;
+        // Actualizar el usuario con la URL de la imagen
+        const mascota = await Mascota.findByIdAndUpdate(
+            mascotaId,
+          { urlImagen: urlImagen },
+          { new: true }
+        );
+        res.status(200).json({ message: "Imagen cargada exitosamente", mascota });
+      } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Error al cargar la imagen", error });
+      }
+}
+
 module.exports = {
     getMascotas,
     createMascota,
     deleteMascota,
     editMascota,
     getMascotasPorUsuario,
-    getOneMascota
+    getOneMascota,
+    guardarImagenMascota
 }
