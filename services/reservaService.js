@@ -86,9 +86,88 @@ const createReserva = async ({
 };
 
 // Función para obtener todas las reservas con sus turnos, con time zone de argentina, en la BD esta guardado con +00:00 por defecto
-const getReservas = async () => {
+const getReservas = async ({
+  search,
+  estado,
+  fechaInicio,
+  fechaFin,
+  precio,
+}) => {
   try {
-    const reservas = await Reserva.find()
+    const query = {};
+
+    if (search) {
+      const usuarios = await Usuario.find({
+        nombre: { $regex: search, $options: "i" },
+      }).select("_id");
+      const usuarioIds = usuarios.map((usuario) => usuario._id);
+      const estados = await Estado.find({
+        estado: { $regex: search, $options: "i" },
+      }).select("_id");
+      const estadoIds = estados.map((estado) => estado._id);
+      const fechaInicioUTC = moment
+        .tz(search, "America/Argentina/Buenos_Aires")
+        .isValid()
+        ? moment.tz(search, "America/Argentina/Buenos_Aires").utc().toDate()
+        : null;
+      const fechaFinUTC = moment
+        .tz(search, "America/Argentina/Buenos_Aires")
+        .isValid()
+        ? moment.tz(search, "America/Argentina/Buenos_Aires").utc().toDate()
+        : null;
+      const precio = parseFloat(search);
+
+      query.$or = [
+        { cliente: { $in: usuarioIds } },
+        { cuidador: { $in: usuarioIds } },
+        { estado: { $in: estadoIds } },
+        { fechaInicio: { $gte: fechaInicioUTC } },
+        { fechaFin: { $lte: fechaFinUTC } },
+      ];
+
+      if (!isNaN(precio)) {
+        query.$or.push({ tarifaTurno: precio });
+      }
+
+      // Verificar si el search es un año
+      const year = parseInt(search, 10);
+      if (!isNaN(year)) {
+        const startOfYear = moment
+          .tz(`${year}-01-01`, "America/Argentina/Buenos_Aires")
+          .startOf("year")
+          .utc()
+          .toDate();
+        const endOfYear = moment
+          .tz(`${year}-12-31`, "America/Argentina/Buenos_Aires")
+          .endOf("year")
+          .utc()
+          .toDate();
+        query.$or.push({ fechaInicio: { $gte: startOfYear, $lte: endOfYear } });
+        query.$or.push({ fechaFin: { $gte: startOfYear, $lte: endOfYear } });
+      }
+    }
+
+    if (estado) {
+      const estadoDoc = await Estado.findOne({ estado });
+      if (estadoDoc) {
+        query.estado = estadoDoc._id;
+      }
+    }
+
+    if (fechaInicio && fechaFin) {
+      const fechaInicioUTC = moment
+        .tz(fechaInicio, "America/Argentina/Buenos_Aires")
+        .utc()
+        .toDate();
+      const fechaFinUTC = moment
+        .tz(fechaFin, "America/Argentina/Buenos_Aires")
+        .utc()
+        .toDate();
+      query.fechaInicio = { $gte: fechaInicioUTC };
+      query.fechaFin = { $lte: fechaFinUTC };
+    }
+
+    const reservas = await Reserva.find(query)
       .populate("cliente", "nombre")
       .populate("cuidador", "nombre")
       .populate("estado", "estado")
@@ -99,7 +178,7 @@ const getReservas = async () => {
         const turnos = await Turno.find({ reserva: reserva._id }).select(
           "fechaHoraInicio"
         );
-        const precio = reserva.contadorTurnos * reserva.tarifaTurno;
+        const precioCalculado = reserva.contadorTurnos * reserva.tarifaTurno;
         return {
           ...reserva.toObject(),
           fechaInicio: moment(reserva.fechaInicio)
@@ -108,7 +187,7 @@ const getReservas = async () => {
           fechaFin: moment(reserva.fechaFin)
             .tz("America/Argentina/Buenos_Aires")
             .format(),
-          precio,
+          precio: precioCalculado,
           turnos: turnos.map((turno) =>
             moment(turno.fechaHoraInicio)
               .tz("America/Argentina/Buenos_Aires")
@@ -118,9 +197,17 @@ const getReservas = async () => {
       })
     );
 
-    return reservasConTurnos;
+    // Filtrar por precio después de calcularlo
+    const reservasFiltradasPorPrecio = precio
+      ? reservasConTurnos.filter(
+          (reserva) => reserva.precio === parseFloat(precio)
+        )
+      : reservasConTurnos;
+
+    return reservasFiltradasPorPrecio;
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Error al obtener reservas:", error);
+    throw new Error("Error al obtener reservas, trate de nuevo después.");
   }
 };
 
