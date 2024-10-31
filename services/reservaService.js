@@ -94,7 +94,6 @@ const getReservas = async ({
   precio,
 }) => {
   try {
-<<<<<<< HEAD
     const query = {};
 
     if (search) {
@@ -107,14 +106,20 @@ const getReservas = async ({
       }).select("_id");
       const estadoIds = estados.map((estado) => estado._id);
       const fechaInicioUTC = moment
-        .tz(search, "America/Argentina/Buenos_Aires")
+        .tz(search, "YYYY-MM-DD", "America/Argentina/Buenos_Aires")
         .isValid()
-        ? moment.tz(search, "America/Argentina/Buenos_Aires").utc().toDate()
+        ? moment
+            .tz(search, "YYYY-MM-DD", "America/Argentina/Buenos_Aires")
+            .utc()
+            .toDate()
         : null;
       const fechaFinUTC = moment
-        .tz(search, "America/Argentina/Buenos_Aires")
+        .tz(search, "YYYY-MM-DD", "America/Argentina/Buenos_Aires")
         .isValid()
-        ? moment.tz(search, "America/Argentina/Buenos_Aires").utc().toDate()
+        ? moment
+            .tz(search, "YYYY-MM-DD", "America/Argentina/Buenos_Aires")
+            .utc()
+            .toDate()
         : null;
       const precio = parseFloat(search);
 
@@ -157,11 +162,11 @@ const getReservas = async ({
 
     if (fechaInicio && fechaFin) {
       const fechaInicioUTC = moment
-        .tz(fechaInicio, "America/Argentina/Buenos_Aires")
+        .tz(fechaInicio, "YYYY-MM-DD", "America/Argentina/Buenos_Aires")
         .utc()
         .toDate();
       const fechaFinUTC = moment
-        .tz(fechaFin, "America/Argentina/Buenos_Aires")
+        .tz(fechaFin, "YYYY-MM-DD", "America/Argentina/Buenos_Aires")
         .utc()
         .toDate();
       query.fechaInicio = { $gte: fechaInicioUTC };
@@ -169,13 +174,8 @@ const getReservas = async ({
     }
 
     const reservas = await Reserva.find(query)
-      .populate("cliente", "nombre")
-      .populate("cuidador", "nombre")
-=======
-    const reservas = await Reserva.find()
       .populate("cliente", "nombre apellido telefono")
       .populate("cuidador", "nombre apellido telefono")
->>>>>>> ad13a80e9ac5923d0299f6cafac026270ec931f9
       .populate("estado", "estado")
       .select("fechaInicio fechaFin contadorTurnos tarifaTurno");
 
