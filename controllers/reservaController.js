@@ -6,7 +6,13 @@ const reservaService = require("../services/reservaService");
 // Función para obtener todas las reservas con sus turnos, con time zone de argentina, en la BD esta guardado con +00:00 por defecto
 const getReservas = async (req, res) => {
   try {
-    const reservas = await reservaService.getReservas();
+    const { search, estado, fechaInicio, fechaFin } = req.body;
+    const reservas = await reservaService.getReservas({
+      search,
+      estado,
+      fechaInicio,
+      fechaFin,
+    });
     res.status(200).json(reservas);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -112,6 +118,19 @@ const getOneReserva = async (req, res) => {
 };
 
 const updateReservaEstado = async (req, res) => {
+<<<<<<< HEAD
+    try {
+        const idReserva = req.params.idReserva;
+        const idEstado = req.params.idEstado;
+        const reserva = await serviceUpdate.updateReservaEstado(idReserva, idEstado);
+        res.status(200).json(reserva);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+// Función para obtener las reservas de un cuidador en un rango de fechas que tengan estado Aprobada o Pendiente, se utiliza en la función getDisponibilidadCuidador de turnoService
+  // devuelve las reservas del cuidador en ese rango de fechas con estado Aprobada o Pendiente. eh... esta hay que borrarla de aca si la usa el service nomas no necesita endpoint
+=======
   try {
     const idReserva = req.params.idReserva;
     const idEstado = req.params.idEstado;
@@ -125,6 +144,7 @@ const updateReservaEstado = async (req, res) => {
   }
 };
 
+>>>>>>> ad13a80e9ac5923d0299f6cafac026270ec931f9
 const getReservasCuidadorEnRango = async (req, res) => {
   try {
     const idCuidador = req.params.id;
