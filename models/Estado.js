@@ -4,7 +4,7 @@ const EstadoSchema = new moongose.Schema({
     type: String,
     required: true,
     trim: true,
-    enum: ["Pendiente", "Aprobada", "No aprobada", "Cancelada", "Finalizada"],
+    enum: ["Pendiente", "Aprobada", "No aprobada", "Cancelada", "Anulada", "Finalizada"],
   },
 });
 
