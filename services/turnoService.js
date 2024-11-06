@@ -128,7 +128,17 @@ const getDisponibilidadCuidador = async (cuidadorId, fechaInicio, fechaFin) => {
     };
   }
 };
+// Función para eliminar los turnos de una reserva 
+const deleteTurnosByReserva = async (reservaId) => {
+  try {
+    const result = await Turno.deleteMany({ reserva: reservaId });
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 module.exports = {
   getDisponibilidadCuidador,
+  deleteTurnosByReserva,
 };

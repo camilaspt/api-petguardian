@@ -4,6 +4,7 @@ const Turno = require("../models/Turno");
 const Usuario = require("../models/Usuario.js");
 const Estado = require("../models/Estado.js");
 const mongoose = require("mongoose");
+const turnoService = require("./turnoService");
 
 // createReserva: Crea unna reserva y sus turnos asociados
   //no valida los turnos, eso se valida en la función getDisponibilidadCuidador de turnoService, el cliente seleccionaría directamente de ese array de horas disponibles
@@ -286,27 +287,96 @@ const aprobarReserva = async (idReserva) => {
 }
 
 const rechazarReserva = async (idReserva) => {
-  const estadoNoAprobada = await Estado.findOne({ estado: "No aprobada" });
-  if (!estadoNoAprobada) {
-    throw new Error("Estado 'No aprobada' no encontrado");
+  try {
+    const estadoNoAprobada = await Estado.findOne({ estado: "No aprobada" });
+    if (!estadoNoAprobada) {
+      throw new Error("Estado 'No aprobada' no encontrado");
+    }
+
+    const reserva = await Reserva.findById(idReserva);
+    if (!reserva) {
+      throw new Error("Reserva no encontrada");
+    }
+
+    await turnoService.deleteTurnosByReserva(idReserva);
+
+    reserva.estado = estadoNoAprobada._id;
+    await reserva.save();
+
+    return reserva;
+  } catch (error) {
+    throw new Error(error.message);
   }
+};
 
-  const reserva = await Reserva.findById(idReserva);
-  if (!reserva) {
-    throw new Error("Reserva no encontrada");
+const anularReserva = async (idReserva) => {
+  try {
+    const estadoAnulada = await Estado.findOne({ estado: "Anulada" });
+    if (!estadoAnulada) {
+      throw new Error("Estado 'Anulada' no encontrado");
+    }
+
+    const reserva = await Reserva.findById(idReserva);
+    if (!reserva) {
+      throw new Error("Reserva no encontrada");
+    }
+
+    if (
+      reserva.estado.toString() !==
+      (await Estado.findOne({ estado: "Aprobada" }))._id.toString()
+    ) {
+      throw new Error("Solo se pueden anular reservas con estado 'Aprobada'");
+    }
+
+    await turnoService.deleteTurnosByReserva(idReserva);
+    reserva.estado = estadoAnulada._id;
+    await reserva.save();
+
+    return reserva;
+  } catch (error) {
+    throw new Error(error.message);
   }
+};
 
-  reserva.estado = estadoNoAprobada._id;
-  await reserva.save();
+const cancelarReserva = async (idReserva) => {
+  try {
+    const estadoCancelada = await Estado.findOne({ estado: "Cancelada" });
+    if (!estadoCancelada) {
+      throw new Error("Estado 'Cancelada' no encontrado");
+    }
 
-  return reserva;
-}
+    const reserva = await Reserva.findById(idReserva);
+    if (!reserva) {
+      throw new Error("Reserva no encontrada");
+    }
 
+    const estadoPendiente = await Estado.findOne({ estado: "Pendiente" });
+    const estadoAprobada = await Estado.findOne({ estado: "Aprobada" });
+
+    if (
+      reserva.estado.toString() !== estadoPendiente._id.toString() &&
+      reserva.estado.toString() !== estadoAprobada._id.toString()
+    ) {
+      throw new Error(
+        "Solo se pueden cancelar reservas con estado 'Pendiente' o 'Aprobada'"
+      );
+    }
+
+    await turnoService.deleteTurnosByReserva(idReserva);
+    reserva.estado = estadoCancelada._id;
+    await reserva.save();
+    return reserva;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 module.exports = {
   getReservas,
   createReserva,
   getReservasCuidadorEnRango,
   updateReservasFinalizadas,
   aprobarReserva,
-  rechazarReserva
+  rechazarReserva,
+  anularReserva,
+  cancelarReserva
 };

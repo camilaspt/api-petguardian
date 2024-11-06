@@ -148,9 +148,8 @@ const getReservasCuidadorEnRango = async (req, res) => {
 
 const cancelarReserva = async (req, res) => {
   try {
-    const idReserva = req.params.idReserva;
-    const reservaCancelada = await serviceUpdate.cancelarReserva(idReserva);
-    res.status(200).json(reservaCancelada);
+    const reserva = await reservaService.cancelarReserva(req.params.idReserva);
+    res.status(200).json(reserva);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -176,6 +175,14 @@ const rechazarReserva = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 }
+const anularReserva = async (req, res) => {
+  try {
+    const reserva = await reservaService.anularReserva(req.params.idReserva);
+    res.status(200).json(reserva);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 module.exports = {
   getReservas,
@@ -189,5 +196,6 @@ module.exports = {
   getReservasCuidadorEnRango,
   cancelarReserva,
   aprobarReserva,
-  rechazarReserva
+  rechazarReserva,
+  anularReserva
 };
