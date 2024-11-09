@@ -1,54 +1,79 @@
 const DisponibilidadCuidador = require('../models/DisponibilidadCuidador.js');
 
-const crearDisponibilidad = async (disponibilidad) => {
+const crearDisponibilidad = async (fecha, horarios, idCuidador) => {
     try {
-        const { dia, horaInicio, horaFin, cuidador } = disponibilidad;
-//verifico que para ese dia ese cuidador no tenga disponibilidad.
-        const disponibilidadExistente = await DisponibilidadCuidador.findOne({ dia, cuidador });
-        if (disponibilidadExistente) {
-            throw new Error('Ya existe una disponibilidad para el cuidador en el día indicado');
-        }
-//convierto en tipo Date las horas de inicio y fin, creo un arreglo con los turnos que vamos a crear y luego los inserto en la base de datos pero como string.
-        const inicio = new Date(`1970-01-01T${horaInicio}:00.000Z`);
-        const fin = new Date(`1970-01-01T${horaFin}:00.000Z`);
-        const disponibilidades = [];
-        for (let hora = inicio; hora < fin; hora.setHours(hora.getHours() + 1)) {
-            disponibilidades.push({
-                dia,
-                horaInicio: hora.toISOString().substring(11, 16),
-                horaFin: new Date(hora.getTime() + 60 * 60 * 1000).toISOString().substring(11, 16),
-                cuidador
-            });
-        }
-//inserto los turnos en la base de datos.
-        const newDisponibilidades = await DisponibilidadCuidador.insertMany(disponibilidades);
-        return newDisponibilidades;
-    } catch (error) {
-        throw new Error(error.message);
-    }
-};
+        console.log('Horarios recibidos:', horarios);
 
-const crearTurnos = async (fecha, horarios, idCuidador) => {
-    try {
-        console.log(horarios);
+        const horas = horarios.map(horario => {
+            console.log('Procesando horario:', horario);
+            return horario.horaInicio.toString();
+        });
 
-        const disponibilidades = horarios.map(horario => ({
+        console.log('Horas procesadas:', horas);
+
+        const disponibilidad = {
             fecha: fecha,
-            horaInicio: horario.horaInicio,
-            horaFin: horario.horaFin,
+            horas: horas,
             cuidador: idCuidador
-        }));
+        };
 
-        const newDisponibilidades = [];
-        for (const disponibilidad of disponibilidades) {
-            const result = await DisponibilidadCuidador.create(disponibilidad);
-            newDisponibilidades.push(result);
-        }
 
-        return newDisponibilidades;
+        const result = await DisponibilidadCuidador.create(disponibilidad);
+
+        return result;
     } catch (error) {
-        console.log(error.message); 
+        console.log('Error al crear disponibilidad:', error.message);
         throw new Error(error.message);
     }
 };
-module.exports = { crearDisponibilidad, crearTurnos };
+
+const obtenerDisponibilidadesPorCuidador = async (idCuidador) => {
+  try {
+    const disponibilidades = await DisponibilidadCuidador.find(
+      { cuidador: idCuidador },
+      "fecha horas"
+    );
+    return disponibilidades;
+  } catch (error) {
+    console.log("Error al obtener disponibilidades:", error.message);
+    throw new Error(error.message);
+  }
+};
+
+const crearOActualizarDisponibilidad = async (fecha, horarios, idCuidador) => {
+  try {
+    // Buscar si ya existe una disponibilidad para el cuidador con la fecha especificada
+    const disponibilidadExistente = await DisponibilidadCuidador.findOne({
+      cuidador: idCuidador,
+      fecha: fecha,
+    });
+
+    // Si existe, eliminarla
+    if (disponibilidadExistente) {
+      await DisponibilidadCuidador.deleteOne({
+        _id: disponibilidadExistente._id,
+      });
+    }
+
+    // Crear la nueva disponibilidad
+    const horas = horarios.map((horario) => horario.horaInicio.toString());
+
+    const nuevaDisponibilidad = {
+      fecha: fecha,
+      horas: horas,
+      cuidador: idCuidador,
+    };
+
+    const result = await DisponibilidadCuidador.create(nuevaDisponibilidad);
+
+    return result;
+  } catch (error) {
+    console.log("Error al crear o actualizar disponibilidad:", error.message);
+    throw new Error(error.message);
+  }
+};
+module.exports = {
+  crearDisponibilidad,
+  obtenerDisponibilidadesPorCuidador,
+  crearOActualizarDisponibilidad,
+};
