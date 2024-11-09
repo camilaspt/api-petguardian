@@ -19,7 +19,6 @@ const updateReservaEstado = async (idReserva, idEstado) => {
         await reserva.save();
         const mails = [cliente.email, cuidador.email];
         const cuerpo = [reserva.numeroReserva, estadoNuevo.estado].join(',');
-       EmailState(mails, cuerp sendo);
         return reserva;
     } catch (error) {
         console.log(error)

@@ -4,14 +4,11 @@ const DisponibilidadCuidadorSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    horaInicio: {
-        type: String,
+    horas: {
+        type: [String],
         required: true
     },
-    horaFin: {
-        type: String,
-        required: true
-    },
+
     cuidador: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Cuidador',

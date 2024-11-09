@@ -50,8 +50,7 @@ const sendEmailNewUser = (email, rol) => {
     });
 };
 
-module.exports = { 
-    sendEmail, 
+module.exports = {  
     sendEmailState,
     sendEmailNewUser 
 };
