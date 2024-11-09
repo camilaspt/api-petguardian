@@ -1,4 +1,7 @@
 const nodemailer = require('nodemailer');
+const Reserva = require('../models/Reserva.js');
+const Estado = require('../models/Estado.js');
+const Usuario = require('../models/Usuario.js');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
@@ -8,46 +11,19 @@ const transporter = nodemailer.createTransport({
         pass: process.env.PASSWORD_EMAIL
     }
 });
-// Función para enviar correos electrónicos base.
-const sendEmail = (to, subject, text) => {
-    const mailOptions = {
-        from: '"PetGuardian" <petguardian.notifications@gmail.com>',
-        to: to, // Destinatario
-        subject: subject, // Asunto del correo
-        text: text // Cuerpo del correo
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log(error);
-        }
-        console.log('Correo enviado: ' + info.response);
-    });
-};
-// Función para enviar correos electrónicos de cambio de contraseña.
-const sendEmailPassword = (email, mensaje) => {
-    const mailOptions = {
-        from: '"PetGuardian" <petguardian.notifications@gmail.com>',
-        to: email, // Destinatario
-        subject: 'Cambia tu Contraseña',
-        text: mensaje // Cuerpo del correo
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log(error);
-        }
-        console.log('Correo enviado: ' + info.response);
-    });
-};
 // Función para enviar correos electrónicos de cambio de estado de reserva.
-const sendEmailState = (emails, cuerpo) => {
-    const [numeroReserva, estado] = cuerpo.split(','); 
+const sendEmailState = async (reserva) => {
+    const cliente = await Usuario.findById(reserva.cliente);
+    const cuidador = await Usuario.findById(reserva.cuidador);
+    const emails = [cliente.email, cuidador.email];
+    const estado = await Estado.findById(reserva.estado);
+    const numeroReserva = reserva.numeroReserva;
+ 
     const mailOptions = {
         from: '"PetGuardian" <petguardian.notifications@gmail.com>',
         to: emails.join(', '),
         subject: 'Una de tus Reservas cambio de Estado',
-        text: `La reserva ${numeroReserva} cambio al estado: ${estado}`
+        text: `La reserva ${numeroReserva} cambio al estado: ${estado}.`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -63,7 +39,7 @@ const sendEmailNewUser = (email, rol) => {
         from: '"PetGuardian" <petguardian.notifications@gmail.com>',
         to: email,
         subject: 'Bienvenido a PetGuardian', 
-        text: `Felicitaciones!!! Ahora sos ${rol} en PetGuardian` 
+        text: `Felicitaciones!!! Ahora sos ${rol} en PetGuardian.` 
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -76,7 +52,6 @@ const sendEmailNewUser = (email, rol) => {
 
 module.exports = { 
     sendEmail, 
-    sendEmailPassword, 
     sendEmailState,
     sendEmailNewUser 
 };
