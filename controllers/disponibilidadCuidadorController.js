@@ -39,8 +39,19 @@ const deleteDisponibilidad = async (req, res) => {
     }
 }
 
+const crearTurnos = async (req, res) => {
+    try {
+        const idCuidador = req.params.idCuidador;
+        const disponibilidad = await service.crearTurnos(req.body.fecha, req.body.horarios, idCuidador);
+        res.status(201).json(disponibilidad);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 module.exports = {
     getDisponibilidadPorCuidador,
     createDisponibilidad,
-    deleteDisponibilidad
+    deleteDisponibilidad,
+    crearTurnos
 }

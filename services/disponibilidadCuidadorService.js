@@ -28,4 +28,27 @@ const crearDisponibilidad = async (disponibilidad) => {
     }
 };
 
-module.exports = { crearDisponibilidad };
+const crearTurnos = async (fecha, horarios, idCuidador) => {
+    try {
+        console.log(horarios);
+
+        const disponibilidades = horarios.map(horario => ({
+            fecha: fecha,
+            horaInicio: horario.horaInicio,
+            horaFin: horario.horaFin,
+            cuidador: idCuidador
+        }));
+
+        const newDisponibilidades = [];
+        for (const disponibilidad of disponibilidades) {
+            const result = await DisponibilidadCuidador.create(disponibilidad);
+            newDisponibilidades.push(result);
+        }
+
+        return newDisponibilidades;
+    } catch (error) {
+        console.log(error.message); 
+        throw new Error(error.message);
+    }
+};
+module.exports = { crearDisponibilidad, crearTurnos };

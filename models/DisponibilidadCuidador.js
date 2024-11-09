@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 const DisponibilidadCuidadorSchema = new mongoose.Schema({
-    dia: {
-        type: String,
-        required: true,
-        enum: ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo']
+    fecha: {
+        type: Date,
+        required: true
     },
     horaInicio: {
         type: String,
