@@ -5,6 +5,8 @@ const Usuario = require("../models/Usuario.js");
 const Estado = require("../models/Estado.js");
 const mongoose = require("mongoose");
 const turnoService = require("./turnoService");
+const {sendEmailState} = require('./emailService.js');
+
 
 // createReserva: Crea unna reserva y sus turnos asociados
   //no valida los turnos, eso se valida en la función getDisponibilidadCuidador de turnoService, el cliente seleccionaría directamente de ese array de horas disponibles
@@ -266,24 +268,29 @@ const updateReservasFinalizadas = async () => {
   for (const reserva of reservasAprobadas) {
     reserva.estado = estadoFinalizada._id;
     await reserva.save();
+    await sendEmailState(reserva);
   }
 };
 
 const aprobarReserva = async (idReserva) => {
-  const estadoAprobada = await Estado.findOne({ estado: "Aprobada" });
-  if (!estadoAprobada) {
-    throw new Error("Estado 'Aprobada' no encontrado");
+  try {
+    const estadoAprobada = await Estado.findOne({ estado: "Aprobada" });
+    if (!estadoAprobada) {
+      throw new Error("Estado 'Aprobada' no encontrado");
+    }
+
+    const reserva = await Reserva.findById(idReserva);
+    if (!reserva) {
+      throw new Error("Reserva no encontrada");
+    }
+
+    reserva.estado = estadoAprobada._id;
+    await reserva.save();
+    await sendEmailState(reserva);
+    return reserva;
+  } catch (error) {
+  throw new Error(error.message);
   }
-
-  const reserva = await Reserva.findById(idReserva);
-  if (!reserva) {
-    throw new Error("Reserva no encontrada");
-  }
-
-  reserva.estado = estadoAprobada._id;
-  await reserva.save();
-
-  return reserva;
 }
 
 const rechazarReserva = async (idReserva) => {
@@ -302,7 +309,7 @@ const rechazarReserva = async (idReserva) => {
 
     reserva.estado = estadoNoAprobada._id;
     await reserva.save();
-
+    await sendEmailState(reserva);
     return reserva;
   } catch (error) {
     throw new Error(error.message);
@@ -331,7 +338,7 @@ const anularReserva = async (idReserva) => {
     await turnoService.deleteTurnosByReserva(idReserva);
     reserva.estado = estadoAnulada._id;
     await reserva.save();
-
+    await sendEmailState(reserva);
     return reserva;
   } catch (error) {
     throw new Error(error.message);
@@ -365,6 +372,7 @@ const cancelarReserva = async (idReserva) => {
     await turnoService.deleteTurnosByReserva(idReserva);
     reserva.estado = estadoCancelada._id;
     await reserva.save();
+    await sendEmailState(reserva);
     return reserva;
   } catch (error) {
     throw new Error(error.message);
