@@ -13,7 +13,6 @@ router.put("/:id", authMiddleware.verifyToken, usuarioController.editUser);
 router.get( "/cuidadores-habilitados/", authMiddleware.verifyToken, usuarioController.getCuidadoresHabilitados);
 router.get( "/cuidadores-pendientes/", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.getCuidadoresPendientes);
 router.get( "/clientes-con-reservas", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.getClientesConReservasPorEstado);
-router.post( "/cambiar-rol", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.cambiarRol); // BORRAR PREGUNTAR A CAMI
 router.get( "/cuidadores-con-reservas", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.getCuidadoresConReservasPorEstado);
 router.get("/:id", authMiddleware.verifyToken, usuarioController.getOneUser);
 // Ruta para cargar una imagen de perfil

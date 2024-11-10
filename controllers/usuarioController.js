@@ -97,17 +97,6 @@ const getOneUser = async (req, res) => {
     }
 }
 
-const cambiarRol = async (req, res) => {
-  const {userId, nuevoRol } = req.body;
-
-  try {
-    const resultado = await service.cambiarRolUsuario(userId, nuevoRol);
-    res.status(200).json(resultado);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-}
-
 const getClientesConReservasPorEstado = async (req, res) => {
   try {
     const resultado = await service.obtenerClientesConReservasPorEstado();
@@ -174,7 +163,6 @@ module.exports = {
   getCuidadoresHabilitados,
   getCuidadoresPendientes,
   getOneUser,
-  cambiarRol,
   getClientesConReservasPorEstado,
   getCuidadoresConReservasPorEstado,
   guardarImagenPerfil,
