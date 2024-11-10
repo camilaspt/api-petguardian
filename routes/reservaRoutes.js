@@ -10,7 +10,6 @@ router.put('/:id',authMiddleware.verifyToken, reservaController.editReserva); //
 router.get('/reservasPorCliente/:id',authMiddleware.verifyToken, authMiddleware.verifyCliente, reservaController.getReservasPorCliente);
 router.get('/reservasPorCuidador/:id',authMiddleware.verifyToken, authMiddleware.verifyCuidadorHabilitado, reservaController.getReservasPorCuidador);
 router.get('/:id',authMiddleware.verifyToken, reservaController.getOneReserva);
-router.patch('/:idReserva/estado/:idEstado', authMiddleware.verifyToken, reservaController.updateReservaEstado);
 router.put('/cancelar/:idReserva', authMiddleware.verifyToken, authMiddleware.verifyCliente, reservaController.cancelarReserva);
 router.put('/aprobar/:idReserva', authMiddleware.verifyToken, authMiddleware.verifyCuidadorHabilitado, reservaController.aprobarReserva);
 router.put('/rechazar/:idReserva', authMiddleware.verifyToken, authMiddleware.verifyCuidadorHabilitado, reservaController.rechazarReserva);

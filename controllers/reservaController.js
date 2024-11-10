@@ -1,6 +1,5 @@
 const Reserva = require("../models/Reserva.js");
 const Estado = require("../models/Estado.js");
-const serviceUpdate = require("../services/updateReservaEstadoService.js");
 const reservaService = require("../services/reservaService");
 
 // Función para obtener todas las reservas con sus turnos, con time zone de argentina, en la BD esta guardado con +00:00 por defecto
@@ -119,20 +118,6 @@ const getOneReserva = async (req, res) => {
   }
 };
 
-const updateReservaEstado = async (req, res) => {
-  try {
-    const idReserva = req.params.idReserva;
-    const idEstado = req.params.idEstado;
-    const reserva = await serviceUpdate.updateReservaEstado(
-      idReserva,
-      idEstado
-    );
-    res.status(200).json(reserva);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
 const getReservasCuidadorEnRango = async (req, res) => {
   try {
     const idCuidador = req.params.id;
@@ -194,7 +179,6 @@ module.exports = {
   getReservasPorCliente,
   getReservasPorCuidador,
   getOneReserva,
-  updateReservaEstado,
   getReservasCuidadorEnRango,
   cancelarReserva,
   aprobarReserva,
