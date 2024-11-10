@@ -8,7 +8,8 @@ const createNewUser = async (req, res) => {
     try {
         const user = await service.crearUsuario(req.body);
         mail.sendEmailNewUser(user.email, user.rol);
-        res.status(201).json(user);
+        const token =  tokenAuthService.createToken(user._id);
+        res.status(201).json({mesage: 'Usuario registrado con exito', token: token, rol: user.rol, idUsuario: user._id})
     } catch (error) {
         console.log("error")
         console.log(error.message);
