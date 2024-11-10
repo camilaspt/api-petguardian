@@ -44,6 +44,11 @@ const ReservaSchema = new mongoose.Schema(
       ref: "Estado",
       required: true,
     },
+    resenia: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Resenia",
+      required: false,
+    },
     contadorTurnos: {
       type: Number,
       default: 0,

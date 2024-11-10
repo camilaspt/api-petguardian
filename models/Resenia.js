@@ -11,7 +11,7 @@ const ReseniaSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-
+  
   comentario: {
     type: String,
     trim: true,

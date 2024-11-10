@@ -83,7 +83,8 @@ const getReservasPorCliente = async (req, res) => {
     const reservas = await Reserva.find({ cliente: idCliente })
       .populate("cuidador", "nombre apellido telefono")
       .populate("mascotas", "nombre")
-      .populate("estado", "estado");
+      .populate("estado", "estado")
+      .populate("resenia", "puntuacion comentario");
     res.status(200).json(reservas);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -96,7 +97,8 @@ const getReservasPorCuidador = async (req, res) => {
     const reservas = await Reserva.find({ cuidador: idCuidador })
       .populate("cliente", "nombre apellido telefono")
       .populate("mascotas", "nombre")
-      .populate("estado", "estado");
+      .populate("estado", "estado")
+      .populate("resenia", "puntuacion comentario");
     res.status(200).json(reservas);
   } catch (error) {
     res.status(400).json({ message: error.message });

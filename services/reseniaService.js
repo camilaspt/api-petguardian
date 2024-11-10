@@ -35,6 +35,11 @@ const createResenia = async (data) => {
         "No se pudo actualizar el promedio de puntuaciones del cuidador"
       );
     }
+
+    //Actualizar la resenia en la reserva
+    reserva.resenia = newResenia._id;
+    await reserva.save();
+    
     console.log("Resultado de la actualización:", result);
 
     return newResenia;

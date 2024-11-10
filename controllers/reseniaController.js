@@ -55,11 +55,15 @@ const getReseniaPorReserva = async (req, res) => {
 const getReseniasPorUsuario = async (req, res) => {
     try {
         const idUsuario = req.params.id;
-        const reservas = await Reser.find({ usuario: idUsuario });
-        const reservasId = reservas.map(reserva => reserva._id);
-        const resenias = await Resenia.find({ reserva: { $in: reservasId } });
+        console.log(idUsuario);
+
+        const reservas = await Reser.find({ cuidador: idUsuario }).populate("resenia", "reserva puntuacion comentario");
+        const resenias = reservas
+            .map(reserva => reserva.resenia)
+            .filter(resenia => resenia !== undefined);
+        console.log(resenias);
         if (resenias.length === 0) {
-            return res.status(404).json({ message: 'No se encontraron reseñas para este Cuidador.' });
+            return res.status(404).json({ message:  'No se encontraron reseñas para este Cuidador.' });
         }
         res.status(200).json(resenias);
     } catch (error) {
