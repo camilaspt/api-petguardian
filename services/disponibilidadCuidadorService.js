@@ -1,5 +1,5 @@
 const DisponibilidadCuidador = require('../models/DisponibilidadCuidador.js');
-
+const moment = require("moment");
 const crearDisponibilidad = async (fecha, horarios, idCuidador) => {
     try {
         console.log('Horarios recibidos:', horarios);
@@ -42,30 +42,48 @@ const obtenerDisponibilidadesPorCuidador = async (idCuidador) => {
 
 const crearOActualizarDisponibilidad = async (fecha, horarios, idCuidador) => {
   try {
-    // Buscar si ya existe una disponibilidad para el cuidador con la fecha especificada
+    // Extraer la fecha del string
+    const fechaSolo = fecha.substring(0, 10);
+    const [year, month, day] = fechaSolo.split("-").map(Number);
+    console.log("Fecha recibida:", year, month, day);
+
+    // Crear las fechas de inicio y fin del día en UTC
+    const inicioDia = new Date(Date.UTC(year, month - 1, day));
+    inicioDia.setUTCHours(0, 0, 0, 0);
+
+    const finDia = new Date(Date.UTC(year, month - 1, day));
+    finDia.setUTCHours(23, 59, 59, 999);
+
+    console.log("Inicio del día:", inicioDia);
+    console.log("Fin del día:", finDia);
+    console.log(
+      "Buscando disponibilidad existente para el cuidador:",
+      idCuidador
+    );
     const disponibilidadExistente = await DisponibilidadCuidador.findOne({
       cuidador: idCuidador,
-      fecha: fecha,
+      fecha: { $gte: inicioDia, $lt: finDia },
     });
 
-    // Si existe, eliminarla
-    if (disponibilidadExistente) {
+    if (
+      disponibilidadExistente || (disponibilidadExistente && horarios.length === 0) ) {
+      console.log("Disponibilidad existente encontrada, eliminando...");
+      console.log("Disponibilidad a eliminar:", disponibilidadExistente);
       await DisponibilidadCuidador.deleteOne({
         _id: disponibilidadExistente._id,
       });
     }
 
-    // Crear la nueva disponibilidad
     const horas = horarios.map((horario) => horario.horaInicio.toString());
-
     const nuevaDisponibilidad = {
       fecha: fecha,
       horas: horas,
       cuidador: idCuidador,
     };
 
+    console.log("Creando nueva disponibilidad:", nuevaDisponibilidad);
     const result = await DisponibilidadCuidador.create(nuevaDisponibilidad);
-
+    console.log("Disponibilidad creada con éxito:", result);
     return result;
   } catch (error) {
     console.log("Error al crear o actualizar disponibilidad:", error.message);
