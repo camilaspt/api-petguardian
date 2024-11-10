@@ -49,7 +49,7 @@ const createReserva = async ({
     // Calcular la cantidad de días entre fechaInicio y fechaFin
     const startDate = new Date(fechaInicio);
     const endDate = new Date(fechaFin);
-    const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+    const days = Math.ceil((endDate - startDate + 1000 * 60 * 60 * 24) / (1000 * 60 * 60 * 24));
 
     // Crear turnos para cada día
     for (let i = 0; i < days; i++) {
