@@ -20,6 +20,20 @@ const createResenia = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+const updateResenia = async (req, res) => {
+  try {
+    const idResenia = req.params.id;
+    const { comentario } = req.body;
+    const updatedResenia = await Resenia.findByIdAndUpdate(
+      idResenia,
+      { comentario },
+      { new: true }
+    );
+    res.status(200).json(updatedResenia);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 
 const deleteResenia = async (req, res) => {
@@ -77,5 +91,6 @@ module.exports = {
     deleteResenia,
     getOneResenia,
     getReseniaPorReserva,
-    getReseniasPorUsuario
+    getReseniasPorUsuario,
+    updateResenia
 }

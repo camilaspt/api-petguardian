@@ -65,10 +65,10 @@ const deleteReserva = async (req, res) => {
 const editReserva = async (req, res) => {
   try {
     const idReserva = req.params.id;
-    const { tarifaTurno, comentario, mascotas } = req.body;
+    const { tarifaTurno, comentario, mascotas, fechaInicio, fechaFin} = req.body;
     const result = await Reserva.updateOne(
       { _id: idReserva },
-      { tarifaTurno, comentario, mascotas }
+      { tarifaTurno, comentario, mascotas, fechaInicio, fechaFin }
     );
     res.status(200).json(result);
   } catch (error) {

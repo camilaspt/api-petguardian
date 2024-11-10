@@ -7,5 +7,6 @@ router.get( "/", authMiddleware.verifyToken, disponibilidadCuidadorController.ge
 router.post('/',authMiddleware.verifyToken, authMiddleware.verifyCuidadorHabilitado, disponibilidadCuidadorController.createDisponibilidad);
 router.post( "/update",  authMiddleware.verifyToken,  authMiddleware.verifyCuidadorHabilitado,  disponibilidadCuidadorController.createOrUpdateDisponibilidad);
 router.delete("/", authMiddleware.verifyToken, authMiddleware.verifyCuidadorHabilitado, disponibilidadCuidadorController.deleteDisponibilidad);    
+router.put("/:id", authMiddleware.verifyToken,  authMiddleware.verifyCuidadorHabilitado,  disponibilidadCuidadorController.updateDisponibilidad);
 
 module.exports = router;

@@ -12,6 +12,23 @@ const getDisponibilidadesPorCuidador = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+const updateDisponibilidad = async (req, res) => {
+  try {
+    const idDisponibilidad = req.params.id;
+    const { horarios } = req.body;
+    const disponibilidad = await Disponibilidad.findByIdAndUpdate(
+      idDisponibilidad,
+      { horas: horarios },
+      { new: true, runValidators: true }
+    );
+    if (!disponibilidad) {
+      return res.status(404).json({ message: "Disponibilidad no encontrada" });
+    }
+    res.status(200).json(disponibilidad);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 
 
@@ -66,4 +83,5 @@ module.exports = {
   createDisponibilidad,
   deleteDisponibilidad,
 createOrUpdateDisponibilidad,
+updateDisponibilidad
 };
