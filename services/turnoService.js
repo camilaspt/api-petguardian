@@ -2,115 +2,171 @@ const Turno = require("../models/Turno.js");
 const Disponibilidad = require("../models/DisponibilidadCuidador.js");
 const moment = require("moment-timezone");
 
-// Función para obtener la disponibilidad de un cuidador en un rango de fechas en zona horaria argentina
-  // Uso en el Front: cuando el cliente sellecciona el icono de reserva en la trajeta de cuidador y selecciona las fechas, este método te devuelve un array de horas disponibles,
-  // que se obtiene cruzando tanto la dispobilidad del cuidador como los turnos de las reservas que tiene el cuidador
+// Función para obtener la disponibilidad de un cuidador en un rango de fechas
 const getDisponibilidadCuidador = async (cuidadorId, fechaInicio, fechaFin) => {
   try {
-      const diasSemana = [
-      "Domingo",
-      "Lunes",
-      "Martes",
-      "Miercoles",
-      "Jueves",
-      "Viernes",
-      "Sabado",
-    ];
+    const { getReservasCuidadorEnRango } = require("./reservaService.js");
 
-    // Convertir las fechas a UTC
-    let startDate = moment
-      .tz(fechaInicio, "America/Argentina/Buenos_Aires")
-      .startOf("day")
-      .utc();
-    let endDate = moment
-      .tz(fechaFin, "America/Argentina/Buenos_Aires")
-      .endOf("day")
-      .utc();
+    // Extraer la fecha en formato YYYY-MM-DD
+    const fechaInicioSolo = fechaInicio.substring(0, 10);
+    const fechaFinSolo = fechaFin.substring(0, 10);
+
+    console.log(`Fecha de inicio recibida: ${fechaInicio}`);
+    console.log(`Fecha de fin recibida: ${fechaFin}`);
+    console.log(`Fecha de inicio (solo): ${fechaInicioSolo}`);
+    console.log(`Fecha de fin (solo): ${fechaFinSolo}`);
+
+    const [startYear, startMonth, startDay] = fechaInicioSolo
+      .split("-")
+      .map(Number);
+    const [endYear, endMonth, endDay] = fechaFinSolo.split("-").map(Number);
+
+    console.log(
+      `Año de inicio: ${startYear}, Mes de inicio: ${startMonth}, Día de inicio: ${startDay}`
+    );
+    console.log(
+      `Año de fin: ${endYear}, Mes de fin: ${endMonth}, Día de fin: ${endDay}`
+    );
+
+    // Crear las fechas de inicio y fin del día en UTC
+    const startDate = new Date(Date.UTC(startYear, startMonth - 1, startDay));
+    startDate.setUTCHours(0, 0, 0, 0);
+
+    const endDate = new Date(Date.UTC(endYear, endMonth - 1, endDay));
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    console.log(
+      `Inicio de getDisponibilidadCuidador para cuidadorId: ${cuidadorId}`
+    );
+    console.log(
+      `Rango de fechas: ${startDate.toISOString()} - ${endDate.toISOString()}`
+    );
 
     // Verificar que fechaInicio sea anterior a fechaFin
-    if (startDate.isAfter(endDate)) {
+    if (startDate > endDate) {
       throw new Error("La fecha de inicio debe ser anterior a la fecha de fin");
     }
 
-    const disponibilidadPorDia = {};
+    const disponibilidadPorFecha = {};
 
     // Iterar sobre cada día en el rango de fechas
     for (
-      let date = startDate.clone();
-      date.isSameOrBefore(endDate);
-      date.add(1, "days")
+      let date = new Date(startDate);
+      date <= endDate;
+      date.setUTCDate(date.getUTCDate() + 1)
     ) {
-      const diaSemana = diasSemana[date.day()];
-    
-      // Obtener la disponibilidad del cuidador para el día específico
-      const disponibilidad = await Disponibilidad.find({
+      const currentDate = new Date(date);
+      const startOfDay = new Date(currentDate);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(currentDate);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+
+      console.log(
+        `Buscando disponibilidad para la fecha: ${currentDate
+          .toISOString()
+          .substring(0, 10)}`
+      );
+      console.log(
+        `Rango de búsqueda: ${startOfDay.toISOString()} - ${endOfDay.toISOString()}`
+      );
+
+      const disponibilidad = await Disponibilidad.findOne({
         cuidador: cuidadorId,
-        dia: diaSemana,
+        fecha: {
+          $gte: startOfDay,
+          $lte: endOfDay,
+        },
       });
 
-      if (disponibilidad.length) {
-        disponibilidadPorDia[diaSemana] = disponibilidad
-          .map((slot) => {
-            const horaInicio = parseInt(slot.horaInicio.split(":")[0], 10);
-            const horaFin = parseInt(slot.horaFin.split(":")[0], 10);
-            const horas = [];
-            for (let hora = horaInicio; hora < horaFin; hora++) {
-              horas.push(hora);
-            }
-            return horas;
-          })
-          .flat();
+      if (disponibilidad) {
+        console.log(
+          `Disponibilidad encontrada para la fecha: ${currentDate
+            .toISOString()
+            .substring(0, 10)}`
+        );
+        disponibilidadPorFecha[currentDate.toISOString().substring(0, 10)] =
+          disponibilidad.horas.map((hora) => parseInt(hora, 10));
+      } else {
+        console.log(
+          `No se encontró disponibilidad para la fecha: ${currentDate
+            .toISOString()
+            .substring(0, 10)}`
+        );
       }
     }
 
-    const { getReservasCuidadorEnRango } = require("./reservaService.js");
+    console.log("Disponibilidad por fecha:", disponibilidadPorFecha);
 
     // Obtener las reservas del cuidador en el rango de fechas
     const reservas = await getReservasCuidadorEnRango(
       cuidadorId,
-      startDate.toDate(),
-      endDate.toDate()
+      startDate,
+      endDate
     );
+
+    console.log("Reservas encontradas:", reservas);
 
     // Obtener los turnos de las reservas
     const turnos = await Turno.find({
       reserva: { $in: reservas.map((r) => r._id) },
     });
 
+    console.log("Turnos encontrados:", turnos);
+
     // Verificar superposición de turnos
     turnos.forEach((turno) => {
-      const turnoFecha = moment(turno.fechaHoraInicio).tz(
-        "America/Argentina/Buenos_Aires"
-      );
-      const diaSemana = diasSemana[turnoFecha.day()];
+      const turnoFecha = moment(turno.fechaHoraInicio);
+      const fecha = turnoFecha.format("YYYY-MM-DD");
       const horaInicioTurno = turnoFecha.hours();
 
-      if (disponibilidadPorDia[diaSemana]) {
-        disponibilidadPorDia[diaSemana] = disponibilidadPorDia[
-          diaSemana
-        ].filter((hora) => hora !== horaInicioTurno);
+      if (disponibilidadPorFecha[fecha]) {
+        console.log(
+          `Eliminando hora ${horaInicioTurno} de la disponibilidad para la fecha: ${fecha}`
+        );
+        disponibilidadPorFecha[fecha] = disponibilidadPorFecha[fecha].filter(
+          (hora) => hora !== horaInicioTurno
+        );
       }
     });
 
+    console.log(
+      "Disponibilidad por fecha después de eliminar turnos:",
+      disponibilidadPorFecha
+    );
+
     // Encontrar la intersección de horas disponibles en todos los días del rango
-    const diasEnRango = [];
+    const fechasEnRango = [];
     for (
-      let date = startDate.clone();
-      date.isSameOrBefore(endDate);
-      date.add(1, "days")
+      let date = new Date(startDate);
+      date <= endDate;
+      date.setUTCDate(date.getUTCDate() + 1)
     ) {
-      diasEnRango.push(diasSemana[date.day()]);
+      fechasEnRango.push(new Date(date).toISOString().substring(0, 10));
     }
 
+    console.log("Fechas en rango:", fechasEnRango);
+
     let horasFinales = [];
-    if (diasEnRango.length > 0) {
-      horasFinales = disponibilidadPorDia[diasEnRango[0]] || [];
-      for (let i = 1; i < diasEnRango.length; i++) {
-        const dia = diasEnRango[i];
-        const horasDia = disponibilidadPorDia[dia] || [];
-        horasFinales = horasFinales.filter((hora) => horasDia.includes(hora));
+    if (fechasEnRango.length > 0) {
+      horasFinales = disponibilidadPorFecha[fechasEnRango[0]] || [];
+      console.log(
+        `Horas iniciales para la fecha ${fechasEnRango[0]}:`,
+        horasFinales
+      );
+      for (let i = 1; i < fechasEnRango.length; i++) {
+        const fecha = fechasEnRango[i];
+        const horasFecha = disponibilidadPorFecha[fecha] || [];
+        console.log(`Horas para la fecha ${fecha}:`, horasFecha);
+        horasFinales = horasFinales.filter((hora) => horasFecha.includes(hora));
+        console.log(
+          `Horas finales después de la fecha ${fecha}:`,
+          horasFinales
+        );
       }
     }
+
+    console.log("Horas finales disponibles:", horasFinales);
 
     if (horasFinales.length === 0) {
       return { message: "El cuidador no tiene disponibilidad para esos días" };
@@ -128,7 +184,7 @@ const getDisponibilidadCuidador = async (cuidadorId, fechaInicio, fechaFin) => {
     };
   }
 };
-// Función para eliminar los turnos de una reserva 
+// Función para eliminar los turnos de una reserva
 const deleteTurnosByReserva = async (reservaId) => {
   try {
     const result = await Turno.deleteMany({ reserva: reservaId });
