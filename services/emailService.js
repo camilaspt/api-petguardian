@@ -17,13 +17,14 @@ const sendEmailState = async (reserva) => {
     const cuidador = await Usuario.findById(reserva.cuidador);
     const emails = [cliente.email, cuidador.email];
     const estado = await Estado.findById(reserva.estado);
+    const estadoNombre = estado.estado;
     const numeroReserva = reserva.numeroReserva;
  
     const mailOptions = {
         from: '"PetGuardian" <petguardian.notifications@gmail.com>',
         to: emails.join(', '),
         subject: 'Una de tus Reservas cambio de Estado',
-        text: `La reserva ${numeroReserva} cambio al estado: ${estado}.`
+        text: `La reserva ${numeroReserva} cambio al estado: ${estadoNombre}.`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
