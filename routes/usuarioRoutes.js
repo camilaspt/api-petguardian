@@ -12,7 +12,7 @@ const upload = require('../utils/cloudinaryConfig.js').upload;
 
 /**
  * @swagger
- * /login:
+ * /api/usuarios/login:
  *   post:
  *     summary: Iniciar sesión de usuario
  *     description: Permite a un usuario iniciar sesión en el sistema.
@@ -77,16 +77,429 @@ const upload = require('../utils/cloudinaryConfig.js').upload;
 *                   example: Error al iniciar sesión
 */
 router.post("/login", usuarioController.login);
+
+/**
+ * @swagger
+ * /api/usuarios:
+ *   post:
+ *     summary: Crear un nuevo usuario
+ *     description: Permite registrar un nuevo usuario en el sistema.
+ *     tags: [Usuario]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: El correo electrónico del usuario
+ *                 example: usuario@test.com
+ *               password:
+ *                 type: string
+ *                 description: La contraseña del usuario
+ *                 example: password123
+ *               nombre:
+ *                 type: string
+ *                 description: El nombre del usuario
+ *                 example: Juan
+ *               apellido:
+ *                 type: string
+ *                 description: El apellido del usuario
+ *                 example: Perez
+ *               cuidador:
+ *                 type: boolean
+ *                 description: Indica si el usuario es un cuidador
+ *                 example: false
+ *     responses:
+ *       '201':
+ *         description: Usuario registrado con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Usuario registrado con exito
+ *                 token:
+ *                   type: string
+ *                   description: Token de autenticación
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 rol:
+ *                   type: string
+ *                   description: Rol del usuario
+ *                   example: Cliente
+ *                 idUsuario:
+ *                   type: string
+ *                   description: ID del usuario
+ *                   example: 60d5f360a3f8b0928c8b4567
+ *       '400':
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error al registrar el usuario
+ */
 router.post("/", usuarioController.createNewUser);
+
+/**
+ * @swagger
+ * /api/usuarios:
+ *   get:
+ *     summary: Obtener todos los usuarios
+ *     description: Permite obtener una lista de todos los usuarios no eliminados.
+ *     tags: [Usuario]
+ *     responses:
+ *       '200':
+ *         description: Lista de usuarios obtenida con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: ID del usuario
+ *                     example: 60d5f360a3f8b0928c8b4567
+ *                   nombre:
+ *                     type: string
+ *                     description: Nombre del usuario
+ *                     example: Juan
+ *                   apellido:
+ *                     type: string
+ *                     description: Apellido del usuario
+ *                     example: Perez
+ *                   email:
+ *                     type: string
+ *                     description: Correo electrónico del usuario
+ *                     example: usuario@test.com
+ *                   telefono:
+ *                     type: string
+ *                     description: Teléfono del usuario
+ *                     example: 123456789
+ *       '400':
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error al obtener los usuarios
+ */
 router.get("/", authMiddleware.verifyToken, usuarioController.getUsers);
+
+/**
+ * @swagger
+ * /api/usuarios/{id}:
+ *   delete:
+ *     summary: Eliminar un usuario
+ *     description: Permite eliminar (marcar como eliminado) un usuario en el sistema.
+ *     tags: [Usuario]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del usuario a eliminar
+ *     responses:
+ *       '200':
+ *         description: Usuario eliminado con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 n:
+ *                   type: number
+ *                   example: 1
+ *                 nModified:
+ *                   type: number
+ *                   example: 1
+ *                 ok:
+ *                   type: number
+ *                   example: 1
+ *       '400':
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error al eliminar el usuario
+ */
 router.delete("/:id", authMiddleware.verifyToken, usuarioController.deleteUser);
+
+/**
+ * @swagger
+ * /{id}:
+ *   put:
+ *     summary: Editar un usuario
+ *     description: Permite editar la información de un usuario en el sistema.
+ *     tags: [Usuario]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del usuario a editar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: El correo electrónico del usuario
+ *                 example: usuario@test.com
+ *               nombre:
+ *                 type: string
+ *                 description: El nombre del usuario
+ *                 example: Juan
+ *               apellido:
+ *                 type: string
+ *                 description: El apellido del usuario
+ *                 example: Perez
+ *               telefono:
+ *                 type: string
+ *                 description: El teléfono del usuario
+ *                 example: 123456789
+ *               domicilio:
+ *                 type: string
+ *                 description: El domicilio del usuario
+ *                 example: Calle Falsa 123
+ *     responses:
+ *       '200':
+ *         description: Usuario editado con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 n:
+ *                   type: number
+ *                   example: 1
+ *                 nModified:
+ *                   type: number
+ *                   example: 1
+ *                 ok:
+ *                   type: number
+ *                   example: 1
+ *       '400':
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error al editar el usuario
+ */
 router.put("/:id", authMiddleware.verifyToken, usuarioController.editUser);
-//router.put('/update-password/:id', usuarioController.editPassword);
+
+/**
+ * @swagger
+ * /api/usuarios/cuidadores-habilitados:
+ *   get:
+ *     summary: Obtener cuidadores habilitados
+ *     description: Permite obtener una lista de todos los cuidadores habilitados no eliminados.
+ *     tags: [Usuario]
+ *     responses:
+ *       '200':
+ *         description: Lista de cuidadores habilitados obtenida con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: ID del usuario
+ *                     example: 60d5f360a3f8b0928c8b4567
+ *                   nombre:
+ *                     type: string
+ *                     description: Nombre del usuario
+ *                     example: Juan
+ *                   apellido:
+ *                     type: string
+ *                     description: Apellido del usuario
+ *                     example: Perez
+ *                   telefono:
+ *                     type: string
+ *                     description: Teléfono del usuario
+ *                     example: 123456789
+ *                   email:
+ *                     type: string
+ *                     description: Correo electrónico del usuario
+ *                     example: usuario@test.com
+ *                   descripcionPersonal:
+ *                     type: string
+ *                     description: Descripción personal del cuidador
+ *                     example: Soy un cuidador con experiencia
+ *                   tarifaHora:
+ *                     type: number
+ *                     description: Tarifa por hora del cuidador
+ *                     example: 20
+ *                   promedioPuntuacion:
+ *                     type: number
+ *                     description: Promedio de puntuación del cuidador
+ *                     example: 4.5
+ *                   imagenPerfil:
+ *                     type: string
+ *                     description: URL de la imagen de perfil del cuidador
+ *                     example: https://example.com/imagen.jpg
+ *       '400':
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error al obtener los cuidadores habilitados
+ */
 router.get( "/cuidadores-habilitados/", authMiddleware.verifyToken, usuarioController.getCuidadoresHabilitados);
+
+/**
+ * @swagger
+ * /cuidadores-pendientes:
+ *   get:
+ *     summary: Obtener cuidadores pendientes
+ *     description: Permite obtener una lista de todos los cuidadores pendientes no eliminados.
+ *     tags: [Usuario]
+ *     responses:
+ *       '200':
+ *         description: Lista de cuidadores pendientes obtenida con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: ID del usuario
+ *                     example: 60d5f360a3f8b0928c8b4567
+ *                   nombre:
+ *                     type: string
+ *                     description: Nombre del usuario
+ *                     example: Juan
+ *                   apellido:
+ *                     type: string
+ *                     description: Apellido del usuario
+ *                     example: Perez
+ *                   telefono:
+ *                     type: string
+ *                     description: Teléfono del usuario
+ *                     example: 123456789
+ *                   email:
+ *                     type: string
+ *                     description: Correo electrónico del usuario
+ *                     example: usuario@example.com
+ *                   domicilio:
+ *                     type: string
+ *                     description: Domicilio del usuario
+ *                     example: Calle Falsa 123
+ *       '400':
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error al obtener los cuidadores pendientes
+ */
 router.get( "/cuidadores-pendientes/", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.getCuidadoresPendientes);
-router.get( "/clientes-con-reservas", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.getClientesConReservasPorEstado);
-router.get( "/cuidadores-con-reservas", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.getCuidadoresConReservasPorEstado);
+
+/**
+ * @swagger
+ * /{id}:
+ *   get:
+ *     summary: Obtener un usuario
+ *     description: Permite obtener la información de un usuario específico en el sistema.
+ *     tags: [Usuario]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del usuario a obtener
+ *     responses:
+ *       '200':
+ *         description: Usuario obtenido con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: ID del usuario
+ *                   example: 60d5f360a3f8b0928c8b4567
+ *                 nombre:
+ *                   type: string
+ *                   description: Nombre del usuario
+ *                   example: Juan
+ *                 apellido:
+ *                   type: string
+ *                   description: Apellido del usuario
+ *                   example: Perez
+ *                 email:
+ *                   type: string
+ *                   description: Correo electrónico del usuario
+ *                   example: usuario@example.com
+ *                 telefono:
+ *                   type: string
+ *                   description: Teléfono del usuario
+ *                   example: 123456789
+ *                 domicilio:
+ *                   type: string
+ *                   description: Domicilio del usuario
+ *                   example: Calle Falsa 123
+ *                 rol:
+ *                   type: string
+ *                   description: Rol del usuario
+ *                   example: Cliente
+ *       '400':
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error al obtener el usuario
+ */
 router.get("/:id", authMiddleware.verifyToken, usuarioController.getOneUser);
+
+//NO SE USAN DESDE EL FRONT
+//router.get( "/clientes-con-reservas", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.getClientesConReservasPorEstado);
+//router.get( "/cuidadores-con-reservas", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.getCuidadoresConReservasPorEstado);
+
 // Ruta para cargar una imagen de perfil
 router.post("/upload/:id", authMiddleware.verifyToken, upload.single('file'), usuarioController.guardarImagenPerfil);
 router.put("/habilitar-cuidador/:id", authMiddleware.verifyToken, authMiddleware.verifyAdmin, usuarioController.habilitarCuidador);
