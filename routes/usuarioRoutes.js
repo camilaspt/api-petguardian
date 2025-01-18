@@ -3,7 +3,79 @@ const   router = express.Router();
 const usuarioController = require("../controllers/usuarioController.js");
 const authMiddleware = require("../services/authMiddlewareService.js");
 const upload = require('../utils/cloudinaryConfig.js').upload;
+/**
+ * @swagger
+ * tags:
+ *   name: Usuario
+ *   description: API para gestionar usuarios
+ */
 
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Iniciar sesión de usuario
+ *     description: Permite a un usuario iniciar sesión en el sistema.
+ *     tags: [Usuario]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: El correo electrónico del usuario
+ *                 example: usuario@test.com
+ *               password:
+ *                 type: string
+ *                 description: La contraseña del usuario
+ *                 example: password123
+ *     responses:
+ *       '200':
+ *         description: Usuario logueado con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Usuario logueado con exito
+ *                 token:
+ *                   type: string
+ *                   description: Token de autenticación
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 rol:
+ *                   type: string
+ *                   description: Rol del usuario
+ *                   example: Cliente
+ *                 idUsuario:
+ *                   type: string
+ *                   description: ID del usuario
+ *                   example: 60d5f360a3f8b0928c8b4567
+*       '404':
+*         description: No existe ningún usuario registrado con el correo electrónico proporcionado
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 message:
+*                   type: string
+*                   example: No existe ningun usuario registrado con ese email
+*       '400':
+*         description: Error en la solicitud, por ejemplo, si la contraseña no coincide
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 message:
+*                   type: string
+*                   example: Error al iniciar sesión
+*/
 router.post("/login", usuarioController.login);
 router.post("/", usuarioController.createNewUser);
 router.get("/", authMiddleware.verifyToken, usuarioController.getUsers);
