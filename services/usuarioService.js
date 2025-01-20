@@ -22,10 +22,18 @@ const crearUsuario = async (usuario) => {
     }
 }
 
-const obtenerClientesConReservasPorEstado = async () => {
+const obtenerClientesConReservasPorEstado = async (filtros) => {
   try {
+    const { nombre, apellido, email, reservasMin, reservasMax } = filtros;
+
+    const matchStage = { rol: "Cliente" };
+
+    if (nombre) matchStage.nombre = { $regex: nombre, $options: "i" };
+    if (apellido) matchStage.apellido = { $regex: apellido, $options: "i" };
+    if (email) matchStage.email = { $regex: email, $options: "i" };
+
     const clientes = await Usuario.aggregate([
-      { $match: { rol: "Cliente" } },
+      { $match: matchStage },
       {
         $lookup: {
           from: "reservas", // Nombre de la colección de reservas
@@ -105,7 +113,18 @@ const obtenerClientesConReservasPorEstado = async () => {
         },
       },
       {
+        $match: {
+          ...(reservasMin !== undefined && {
+            reservasTotales: { $gte: reservasMin },
+          }),
+          ...(reservasMax !== undefined && {
+            reservasTotales: { $lte: reservasMax },
+          }),
+        },
+      },
+      {
         $project: {
+          createdAt: 1,
           nombre: 1,
           apellido: 1,
           email: 1,
@@ -120,7 +139,102 @@ const obtenerClientesConReservasPorEstado = async () => {
       },
     ]);
 
-    return { clientes };
+    // Obtener estadísticas
+    const totalClientes = await Usuario.countDocuments({ rol: "Cliente" });
+    const clientesFiltrados = clientes.length;
+    const clientes1a10 = await Usuario.aggregate([
+      { $match: { rol: "Cliente" } },
+      {
+        $lookup: {
+          from: "reservas",
+          localField: "_id",
+          foreignField: "cliente",
+          as: "reservas",
+        },
+      },
+      {
+        $addFields: {
+          reservasTotales: { $size: "$reservas" },
+        },
+      },
+      {
+        $match: { reservasTotales: { $gte: 1, $lte: 10 } },
+      },
+      { $count: "count" },
+    ]);
+    const clientes11a20 = await Usuario.aggregate([
+      { $match: { rol: "Cliente" } },
+      {
+        $lookup: {
+          from: "reservas",
+          localField: "_id",
+          foreignField: "cliente",
+          as: "reservas",
+        },
+      },
+      {
+        $addFields: {
+          reservasTotales: { $size: "$reservas" },
+        },
+      },
+      {
+        $match: { reservasTotales: { $gte: 11, $lte: 20 } },
+      },
+      { $count: "count" },
+    ]);
+    const clientes21a50 = await Usuario.aggregate([
+      { $match: { rol: "Cliente" } },
+      {
+        $lookup: {
+          from: "reservas",
+          localField: "_id",
+          foreignField: "cliente",
+          as: "reservas",
+        },
+      },
+      {
+        $addFields: {
+          reservasTotales: { $size: "$reservas" },
+        },
+      },
+      {
+        $match: { reservasTotales: { $gte: 21, $lte: 50 } },
+      },
+      { $count: "count" },
+    ]);
+    const clientes51a100 = await Usuario.aggregate([
+      { $match: { rol: "Cliente" } },
+      {
+        $lookup: {
+          from: "reservas",
+          localField: "_id",
+          foreignField: "cliente",
+          as: "reservas",
+        },
+      },
+      {
+        $addFields: {
+          reservasTotales: { $size: "$reservas" },
+        },
+      },
+      {
+        $match: { reservasTotales: { $gte: 51, $lte: 100 } },
+      },
+      { $count: "count" },
+    ]);
+
+    return {
+      clientes,
+      estadisticas: {
+        totalClientes,
+        clientesFiltrados,
+        clientes1a10: clientes1a10[0] ? clientes1a10[0].count : 0,
+        clientes11a20: clientes11a20[0] ? clientes11a20[0].count : 0,
+        clientes21a50: clientes21a50[0] ? clientes21a50[0].count : 0,
+        clientes51a100: clientes51a100[0] ? clientes51a100[0].count : 0,
+      },
+    };
+
   } catch (error) {
     throw new Error(error.message);
   }

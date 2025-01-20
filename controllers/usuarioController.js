@@ -100,7 +100,8 @@ const getOneUser = async (req, res) => {
 
 const getClientesConReservasPorEstado = async (req, res) => {
   try {
-    const resultado = await service.obtenerClientesConReservasPorEstado();
+    const filtros = req.body;
+    const resultado = await service.obtenerClientesConReservasPorEstado(filtros);
     res.status(200).json(resultado);
   } catch (error) {
     res.status(500).json({ message: error.message });
