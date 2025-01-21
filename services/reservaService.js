@@ -3,6 +3,7 @@ const Reserva = require("../models/Reserva.js");
 const Turno = require("../models/Turno");
 const Usuario = require("../models/Usuario.js");
 const Estado = require("../models/Estado.js");
+const Resenia = require("../models/Resenia.js");
 const mongoose = require("mongoose");
 const turnoService = require("./turnoService");
 const {sendEmailState} = require('./emailService.js');
@@ -89,135 +90,203 @@ const createReserva = async ({
 };
 
 // Función para obtener todas las reservas con sus turnos, con time zone de argentina, en la BD esta guardado con +00:00 por defecto
-const getReservas = async ({
-  search,
-  estado,
-  fechaInicio,
-  fechaFin,
-  precio,
-}) => {
-  try {
-    const query = {};
+const getReservas = async (filtros) => {
+   try {
 
-    if (search) {
-      const usuarios = await Usuario.find({
-        nombre: { $regex: search, $options: "i" },
-      }).select("_id");
-      const usuarioIds = usuarios.map((usuario) => usuario._id);
-      const estados = await Estado.find({
-        estado: { $regex: search, $options: "i" },
-      }).select("_id");
-      const estadoIds = estados.map((estado) => estado._id);
-      const fechaInicioUTC = moment
-        .tz(search, "YYYY-MM-DD", "America/Argentina/Buenos_Aires")
-        .isValid()
-        ? moment
-            .tz(search, "YYYY-MM-DD", "America/Argentina/Buenos_Aires")
-            .utc()
-            .toDate()
-        : null;
-      const fechaFinUTC = moment
-        .tz(search, "YYYY-MM-DD", "America/Argentina/Buenos_Aires")
-        .isValid()
-        ? moment
-            .tz(search, "YYYY-MM-DD", "America/Argentina/Buenos_Aires")
-            .utc()
-            .toDate()
-        : null;
-      const precio = parseFloat(search);
+    const estadoPendiente = await Estado.findOne({ estado: "Pendiente" })
+      .select("_id")
+      .lean();
+    const estadoFinalizada = await Estado.findOne({ estado: "Finalizada" })
+      .select("_id")
+      .lean();
+    const estadoAprobada = await Estado.findOne({ estado: "Aprobada" })
+      .select("_id")
+      .lean();
+    const estadoCancelada = await Estado.findOne({ estado: "Cancelada" })
+      .select("_id")
+      .lean();
+    const estadoNoAprobada = await Estado.findOne({ estado: "No aprobada" })
+      .select("_id")
+      .lean();
+    const estadoAnulada = await Estado.findOne({ estado: "Anulada" })
+      .select("_id")
+      .lean();
+     const { fechaInicio, fechaFin, nombre, estado } = filtros;
 
-      query.$or = [
-        { cliente: { $in: usuarioIds } },
-        { cuidador: { $in: usuarioIds } },
-        { estado: { $in: estadoIds } },
-        { fechaInicio: { $gte: fechaInicioUTC } },
-        { fechaFin: { $lte: fechaFinUTC } },
-      ];
+     const matchStage = {};
 
-      if (!isNaN(precio)) {
-        query.$or.push({ tarifaTurno: precio });
-      }
+     if (fechaInicio)
+       matchStage.fechaHoraInicio = { $gte: new Date(fechaInicio) };
+     if (fechaFin)
+       matchStage.fechaHoraInicio = {
+         ...matchStage.fechaHoraInicio,
+         $lte: new Date(fechaFin),
+       };
+     if (estado) matchStage.estado = mongoose.Types.ObjectId(estado);
+    
 
-      // Verificar si el search es un año
-      const year = parseInt(search, 10);
-      if (!isNaN(year)) {
-        const startOfYear = moment
-          .tz(`${year}-01-01`, "America/Argentina/Buenos_Aires")
-          .startOf("year")
-          .utc()
-          .toDate();
-        const endOfYear = moment
-          .tz(`${year}-12-31`, "America/Argentina/Buenos_Aires")
-          .endOf("year")
-          .utc()
-          .toDate();
-        query.$or.push({ fechaInicio: { $gte: startOfYear, $lte: endOfYear } });
-        query.$or.push({ fechaFin: { $gte: startOfYear, $lte: endOfYear } });
-      }
-    }
+     const reservas = await Reserva.aggregate([
+       {
+         $lookup: {
+           from: "usuarios",
+           localField: "cliente",
+           foreignField: "_id",
+           as: "cliente",
+         },
+       },
+       { $unwind: "$cliente" },
+       {
+         $match: { "cliente.rol": "Cliente" },
+       },
+       {
+         $lookup: {
+           from: "usuarios",
+           localField: "cuidador",
+           foreignField: "_id",
+           as: "cuidador",
+         },
+       },
+       { $unwind: "$cuidador" },
+       {
+         $match: { "cuidador.rol": "Cuidador Habilitado" },
+       },
+       {
+         $lookup: {
+           from: "estados",
+           localField: "estado",
+           foreignField: "_id",
+           as: "estado",
+         },
+       },
+       { $unwind: "$estado" },
+       {
+         $lookup: {
+           from: "resenias",
+           localField: "_id",
+           foreignField: "reserva",
+           as: "resenia",
+         },
+       },
+       { $unwind: { path: "$resenia", preserveNullAndEmptyArrays: true } },
+       {
+         $addFields: {
+           precioReserva: {
+             $multiply: ["$cuidador.tarifaHora", "$contadorTurnos"],
+           },
+           puntuacion: "$resenia.puntuacion",
+           clienteNombreCompleto: {
+             $concat: ["$cliente.nombre", " ", "$cliente.apellido"],
+           },
+           cuidadorNombreCompleto: {
+             $concat: ["$cuidador.nombre", " ", "$cuidador.apellido"],
+           },
+         },
+       },
+       {
+         $match: {
+           ...matchStage,
+           ...(nombre && {
+             $or: [
+               { clienteNombreCompleto: { $regex: nombre, $options: "i" } },
+               { cuidadorNombreCompleto: { $regex: nombre, $options: "i" } },
+               { "cliente.nombre": { $regex: nombre, $options: "i" } },
+               { "cliente.apellido": { $regex: nombre, $options: "i" } },
+               { "cuidador.nombre": { $regex: nombre, $options: "i" } },
+               { "cuidador.apellido": { $regex: nombre, $options: "i" } },
+             ],
+           }),
+         },
+       },
 
-    if (estado) {
-      const estadoDoc = await Estado.findOne({ estado });
-      if (estadoDoc) {
-        query.estado = estadoDoc._id;
-      }
-    }
+       {
+         $project: {
+           fechaInicio: {
+             $dateToString: { format: "%d-%m-%Y", date: "$fechaInicio" },
+           },
+           fechaFin: {
+             $dateToString: { format: "%d-%m-%Y", date: "$fechaFin" },
+           },
+           estado: "$estado.estado",
+           cliente: "$clienteNombreCompleto",
+           cuidador: "$cuidadorNombreCompleto",
+           contadorTurnos: 1,
+           precioReserva: 1,
+           puntuacion: 1,
+         },
+       },
+     ]);
 
-    if (fechaInicio && fechaFin) {
-      const fechaInicioUTC = moment
-        .tz(fechaInicio, "YYYY-MM-DD", "America/Argentina/Buenos_Aires")
-        .utc()
-        .toDate();
-      const fechaFinUTC = moment
-        .tz(fechaFin, "YYYY-MM-DD", "America/Argentina/Buenos_Aires")
-        .utc()
-        .toDate();
-      query.fechaInicio = { $gte: fechaInicioUTC };
-      query.fechaFin = { $lte: fechaFinUTC };
-    }
+     //  estadísticas
+     const totalReservas = await Reserva.countDocuments();
+     const reservasFiltradas = reservas.length;
+    const reservasPendientes = await Reserva.countDocuments({
+      estado: estadoPendiente._id,
+    });
+    const reservasFinalizadas = await Reserva.countDocuments({
+      estado: estadoFinalizada._id,
+    });
+    const reservasAprobadas = await Reserva.countDocuments({
+      estado: estadoAprobada._id,
+    });
+    const reservasCanceladas = await Reserva.countDocuments({
+      estado: estadoCancelada._id,
+    });
+    const reservasNoAprobadas = await Reserva.countDocuments({
+      estado: estadoNoAprobada._id,
+    });
+    const reservasAnuladas = await Reserva.countDocuments({
+      estado: estadoAnulada._id,
+    });
 
-    const reservas = await Reserva.find(query)
-      .populate("cliente", "nombre apellido telefono")
-      .populate("cuidador", "nombre apellido telefono")
-      .populate("estado", "estado")
-      .select("fechaInicio fechaFin contadorTurnos tarifaTurno");
+     const totalIngresos = await Reserva.aggregate([
+       {
+         $lookup: {
+           from: "usuarios",
+           localField: "cuidador",
+           foreignField: "_id",
+           as: "cuidador",
+         },
+       },
+       { $unwind: "$cuidador" },
+       {
+         $group: {
+           _id: null,
+           totalIngresos: {
+             $sum: { $multiply: ["$cuidador.tarifaHora", "$contadorTurnos"] },
+           },
+         },
+       },
+     ]);
 
-    const reservasConTurnos = await Promise.all(
-      reservas.map(async (reserva) => {
-        const turnos = await Turno.find({ reserva: reserva._id }).select(
-          "fechaHoraInicio"
-        );
-        const precioCalculado = reserva.contadorTurnos * reserva.tarifaTurno;
-        return {
-          ...reserva.toObject(),
-          fechaInicio: moment(reserva.fechaInicio)
-            .tz("America/Argentina/Buenos_Aires")
-            .format(),
-          fechaFin: moment(reserva.fechaFin)
-            .tz("America/Argentina/Buenos_Aires")
-            .format(),
-          precio: precioCalculado,
-          turnos: turnos.map((turno) =>
-            moment(turno.fechaHoraInicio)
-              .tz("America/Argentina/Buenos_Aires")
-              .format()
-          ),
-        };
-      })
-    );
+     const promedioPuntuacion = await Resenia.aggregate([
+       {
+         $group: {
+           _id: null,
+           promedioPuntuacion: { $avg: "$puntuacion" },
+         },
+       },
+     ]);
 
-    // Filtrar por precio después de calcularlo
-    const reservasFiltradasPorPrecio = precio
-      ? reservasConTurnos.filter(
-          (reserva) => reserva.precio === parseFloat(precio)
-        )
-      : reservasConTurnos;
-
-    return reservasFiltradasPorPrecio;
-  } catch (error) {
-    console.error("Error al obtener reservas:", error);
-    throw new Error("Error al obtener reservas, trate de nuevo después.");
-  }
+     return {
+       reservas,
+       estadisticas: {
+         reservasFiltradas, // o total de registros mostrados en pantalla,
+         totalReservas,
+         reservasPendientes,
+         reservasFinalizadas,
+         reservasAprobadas,
+         reservasCanceladas,
+         reservasNoAprobadas,
+         reservasAnuladas,
+         totalIngresos: totalIngresos[0] ? totalIngresos[0].totalIngresos : 0,
+         promedioPuntuacion: promedioPuntuacion[0]
+           ? promedioPuntuacion[0].promedioPuntuacion
+           : 0,
+       },
+     };
+   } catch (error) {
+     throw new Error(error.message);
+   }
 };
 
 // Función para obtener las reservas de un cuidador en un rango de fechas que tengan estado Aprobada o Pendiente, se utiliza en la función getDisponibilidadCuidador de turnoService
