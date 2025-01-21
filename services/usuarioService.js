@@ -124,7 +124,9 @@ const obtenerClientesConReservasPorEstado = async (filtros) => {
       },
       {
         $project: {
-          createdAt: 1,
+          createdAt: {
+            $dateToString: { format: "%d-%m-%Y", date: "$createdAt" },
+          },
           nombre: 1,
           apellido: 1,
           email: 1,
