@@ -110,8 +110,9 @@ const getClientesConReservasPorEstado = async (req, res) => {
 
 const getCuidadoresConReservasPorEstado = async (req, res) => {
   try {
-    const { cuidadores } =
-      await service.obtenerCuidadoresConReservasPorEstado();
+    const filtros = req.body;
+    const cuidadores  =
+      await service.obtenerCuidadoresConReservasPorEstado(filtros);
     res.status(200).json(cuidadores);
   } catch (error) {
     res.status(500).json({ message: error.message });

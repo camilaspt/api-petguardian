@@ -241,20 +241,23 @@ const obtenerClientesConReservasPorEstado = async (filtros) => {
     throw new Error(error.message);
   }
 };
-const obtenerCuidadoresConReservasPorEstado = async () => {
+const obtenerCuidadoresConReservasPorEstado = async (filtros) => {
   try {
+    const { nombre, apellido, email, estado } = filtros;
+
+    const matchStage = {
+      rol:{ $in: [
+        "Cuidador Habilitado" ,
+        "Cuidador No Habilitado" ,
+        "Cuidador Pendiente"
+  ]}};
+
+    if (nombre) matchStage.nombre = { $regex: nombre, $options: "i" };
+    if (apellido) matchStage.apellido = { $regex: apellido, $options: "i" };
+    if (email) matchStage.email = { $regex: email, $options: "i" };
+  
     const cuidadores = await Usuario.aggregate([
-      {
-        $match: {
-          rol: {
-            $in: [
-              "Cuidador Pendiente",
-              "Cuidador No Habilitado",
-              "Cuidador Habilitado",
-            ],
-          },
-        },
-      },
+      { $match: matchStage },
       {
         $lookup: {
           from: "reservas", // Nombre de la colección de reservas
@@ -322,6 +325,25 @@ const obtenerCuidadoresConReservasPorEstado = async () => {
       },
       {
         $addFields: {
+          estado: {
+            $cond: {
+              if: { $eq: ["$rol", "Cuidador Habilitado"] },
+              then: "Habilitado",
+              else: {
+                $cond: {
+                  if: { $eq: ["$rol", "Cuidador No Habilitado"] },
+                  then: "No habilitado",
+                  else: {
+                    $cond: {
+                      if: { $eq: ["$rol", "Cuidador Pendiente"] },
+                      then: "Pendiente",
+                      else: "$estado", // Mantener el valor original si no coincide con ninguno
+                    },
+                  },
+                },
+              },
+            },
+          },
           reservasTotales: {
             $sum: [
               "$reservasCanceladas",
@@ -331,31 +353,77 @@ const obtenerCuidadoresConReservasPorEstado = async () => {
               "$reservasNoAprobadas",
             ],
           },
-          promedioPuntuacion: { $avg: "$reservas.puntuacion" },
         },
       },
+      ...(estado
+        ? [{ $match: { estado: { $regex: estado, $options: "i" } } }]
+        : []),
       {
         $project: {
+          createdAt: {
+            $dateToString: { format: "%d-%m-%Y", date: "$createdAt" },
+          },
           nombre: 1,
           apellido: 1,
           email: 1,
           telefono: 1,
+          estado: 1,
+          tarifa: 1,
           promedioPuntuacion: 1,
+          reservasTotales: 1,
           reservasCanceladas: 1,
           reservasFinalizadas: 1,
           reservasAprobadas: 1,
           reservasPendientes: 1,
           reservasNoAprobadas: 1,
-          reservasTotales: 1,
         },
       },
     ]);
 
-    return { cuidadores };
+    // Obtener estadísticas
+    const cuidadoresPendientes = await Usuario.countDocuments({rol: "Cuidador Pendiente"});
+    const cuidadoresHabilitados = await Usuario.countDocuments({
+      rol: "Cuidador Habilitado",
+    });
+    const cuidadoresNoHabilitados = await Usuario.countDocuments({ rol: "Cuidador No Habilitado" });
+
+    const totalCuidadores = await Usuario.countDocuments({ rol:{$in: ["Cuidador Habilitado" ,"Cuidador No Habilitado" ,   "Cuidador Pendiente"]}});
+    const puntuacionPromedioHabilitados = await Usuario.aggregate([
+      {
+        $match: { rol: "Cuidador Habilitado", promedioPuntuacion: { $ne: 0 } },
+      },
+      {
+        $group: {
+          _id: null,
+          promedioPuntuacion: { $avg: "$promedioPuntuacion" },
+        },
+      },
+    ]);
+
+    const promedioPuntuacionHabilitados =
+      puntuacionPromedioHabilitados.length > 0
+        ? Math.round(puntuacionPromedioHabilitados[0].promedioPuntuacion * 10) /
+          10
+        : 0;
+
+    const cuidadoresFiltrados = cuidadores.length;
+
+  return {
+    cuidadores,
+    estadisticas: {
+      cuidadoresPendientes,
+      cuidadoresHabilitados,
+      cuidadoresNoHabilitados,
+      totalCuidadores,
+      cuidadoresFiltrados,
+      promedioPuntuacionHabilitados,
+    },
+  };
   } catch (error) {
     throw new Error(error.message);
   }
 };
+
 const calcularPromedioPuntuacion = async (cuidadorId, nuevaPuntuacion) => {
   try {
     // Obtener todas las reseñas del cuidador
