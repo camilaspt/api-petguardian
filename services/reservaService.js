@@ -91,8 +91,7 @@ const createReserva = async ({
 
 // Función para obtener todas las reservas con sus turnos, con time zone de argentina, en la BD esta guardado con +00:00 por defecto
 const getReservas = async (filtros) => {
-   try {
-
+  try {
     const estadoPendiente = await Estado.findOne({ estado: "Pendiente" })
       .select("_id")
       .lean();
@@ -111,114 +110,158 @@ const getReservas = async (filtros) => {
     const estadoAnulada = await Estado.findOne({ estado: "Anulada" })
       .select("_id")
       .lean();
-     const { fechaInicio, fechaFin, nombre, estado } = filtros;
 
-     const matchStage = {};
+    const { fechaInicio, fechaFin, nombre, estado } = filtros;
 
-     if (fechaInicio)
-       matchStage.fechaHoraInicio = { $gte: new Date(fechaInicio) };
-     if (fechaFin)
-       matchStage.fechaHoraInicio = {
-         ...matchStage.fechaHoraInicio,
-         $lte: new Date(fechaFin),
-       };
-     if (estado) matchStage.estado = mongoose.Types.ObjectId(estado);
-    
+    const matchStage = {};
 
-     const reservas = await Reserva.aggregate([
-       {
-         $lookup: {
-           from: "usuarios",
-           localField: "cliente",
-           foreignField: "_id",
-           as: "cliente",
-         },
-       },
-       { $unwind: "$cliente" },
-       {
-         $match: { "cliente.rol": "Cliente" },
-       },
-       {
-         $lookup: {
-           from: "usuarios",
-           localField: "cuidador",
-           foreignField: "_id",
-           as: "cuidador",
-         },
-       },
-       { $unwind: "$cuidador" },
-       {
-         $match: { "cuidador.rol": "Cuidador Habilitado" },
-       },
-       {
-         $lookup: {
-           from: "estados",
-           localField: "estado",
-           foreignField: "_id",
-           as: "estado",
-         },
-       },
-       { $unwind: "$estado" },
-       {
-         $lookup: {
-           from: "resenias",
-           localField: "_id",
-           foreignField: "reserva",
-           as: "resenia",
-         },
-       },
-       { $unwind: { path: "$resenia", preserveNullAndEmptyArrays: true } },
-       {
-         $addFields: {
-           precioReserva: {
-             $multiply: ["$cuidador.tarifaHora", "$contadorTurnos"],
-           },
-           puntuacion: "$resenia.puntuacion",
-           clienteNombreCompleto: {
-             $concat: ["$cliente.nombre", " ", "$cliente.apellido"],
-           },
-           cuidadorNombreCompleto: {
-             $concat: ["$cuidador.nombre", " ", "$cuidador.apellido"],
-           },
-         },
-       },
-       {
-         $match: {
-           ...matchStage,
-           ...(nombre && {
-             $or: [
-               { clienteNombreCompleto: { $regex: nombre, $options: "i" } },
-               { cuidadorNombreCompleto: { $regex: nombre, $options: "i" } },
-               { "cliente.nombre": { $regex: nombre, $options: "i" } },
-               { "cliente.apellido": { $regex: nombre, $options: "i" } },
-               { "cuidador.nombre": { $regex: nombre, $options: "i" } },
-               { "cuidador.apellido": { $regex: nombre, $options: "i" } },
-             ],
-           }),
-         },
-       },
 
-       {
-         $project: {
-           fechaInicio: {
-             $dateToString: { format: "%d-%m-%Y", date: "$fechaInicio" },
-           },
-           fechaFin: {
-             $dateToString: { format: "%d-%m-%Y", date: "$fechaFin" },
-           },
-           estado: "$estado.estado",
-           cliente: "$clienteNombreCompleto",
-           cuidador: "$cuidadorNombreCompleto",
-           contadorTurnos: 1,
-           precioReserva: 1,
-           puntuacion: 1,
-         },
-       },
-     ]);
+    const convertToDate = (dateStr) => {
+      return moment(dateStr, "DD-MM-YYYY").toDate();
+    };
+    if (fechaInicio && fechaFin) {
+      const startDate = convertToDate(fechaInicio);
+      const endDate = convertToDate(fechaFin);
+      if (startDate > endDate) {
+        throw new Error(
+          "La fechaInicio debe ser menor o igual a la fechafin."
+        );
+      }
+    }
 
-     //  estadísticas
-     const totalReservas = await Reserva.countDocuments();
-     const reservasFiltradas = reservas.length;
+        if (fechaInicio && fechaFin) {
+      const startDate = convertToDate(fechaInicio);
+      const endDate = convertToDate(fechaFin);
+      if (startDate > endDate) {
+        throw new Error("La fecha de inicio debe ser menor o igual a la fecha de fin.");
+      }
+    }
+
+    if (fechaInicio ) {
+      const startDate = convertToDate(fechaInicio);
+      matchStage.fechaInicio = { $gte: startDate };
+    }
+
+    if (fechaFin) {
+      const endDate = convertToDate(fechaFin);
+      if (matchStage.fechaInicio) {
+        const startDate = convertToDate(fechaInicio);
+        matchStage.fechaInicio = { $gte: startDate };
+        matchStage.fechaFin = { $lte: endDate };
+      } else {
+        matchStage.fechaFin = { $lte: endDate };
+      }
+    }
+
+      if (estado) {
+        const estadoEncontrado = await Estado.findOne({ estado })
+          .select("_id")
+          .lean();
+        if (!estadoEncontrado) {
+          throw new Error("Estado no válido");
+        }
+        matchStage["estado.estado"]= estado;
+      }
+
+
+    console.log("MatchStage:", matchStage);
+    console.log("estado:", estado);
+    console.log("match estado", matchStage.estado);
+    console.log("estadoPendiente", estadoPendiente._id);
+
+    const reservas = await Reserva.aggregate([
+      {
+        $lookup: {
+          from: "usuarios",
+          localField: "cliente",
+          foreignField: "_id",
+          as: "cliente",
+        },
+      },
+      { $unwind: { path: "$cliente", preserveNullAndEmptyArrays: true } },
+      {
+        $match: { "cliente.rol": "Cliente" },
+      },
+      {
+        $lookup: {
+          from: "usuarios",
+          localField: "cuidador",
+          foreignField: "_id",
+          as: "cuidador",
+        },
+      },
+      { $unwind: { path: "$cuidador", preserveNullAndEmptyArrays: true } },
+      {
+        $match: { "cuidador.rol": "Cuidador Habilitado" },
+      },
+      {
+        $lookup: {
+          from: "estados",
+          localField: "estado",
+          foreignField: "_id",
+          as: "estado",
+        },
+      },
+      { $unwind: { path: "$estado", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "resenias",
+          localField: "_id",
+          foreignField: "reserva",
+          as: "resenia",
+        },
+      },
+      { $unwind: { path: "$resenia", preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          precioReserva: {
+            $multiply: ["$cuidador.tarifaHora", "$contadorTurnos"],
+          },
+          puntuacion: "$resenia.puntuacion",
+          clienteNombreCompleto: {
+            $concat: ["$cliente.nombre", " ", "$cliente.apellido"],
+          },
+          cuidadorNombreCompleto: {
+            $concat: ["$cuidador.nombre", " ", "$cuidador.apellido"],
+          },
+        },
+      },
+      {
+        $match: {
+          ...matchStage,
+          ...(nombre && {
+            $or: [
+              { clienteNombreCompleto: { $regex: nombre, $options: "i" } },
+              { cuidadorNombreCompleto: { $regex: nombre, $options: "i" } },
+              { "cliente.nombre": { $regex: nombre, $options: "i" } },
+              { "cliente.apellido": { $regex: nombre, $options: "i" } },
+              { "cuidador.nombre": { $regex: nombre, $options: "i" } },
+              { "cuidador.apellido": { $regex: nombre, $options: "i" } },
+            ],
+          }),
+        },
+      },
+      {
+        $project: {
+          fechaInicio: {
+            $dateToString: { format: "%d-%m-%Y", date: "$fechaInicio" },
+          },
+          fechaFin: {
+            $dateToString: { format: "%d-%m-%Y", date: "$fechaFin" },
+          },
+          estado: "$estado.estado",
+          cliente: "$clienteNombreCompleto",
+          cuidador: "$cuidadorNombreCompleto",
+          contadorTurnos: 1,
+          precioReserva: 1,
+          puntuacion: 1,
+        },
+      },
+    ]);
+
+    //  estadísticas
+    const totalReservas = await Reserva.countDocuments();
+    const reservasFiltradas = reservas.length;
     const reservasPendientes = await Reserva.countDocuments({
       estado: estadoPendiente._id,
     });
@@ -238,55 +281,55 @@ const getReservas = async (filtros) => {
       estado: estadoAnulada._id,
     });
 
-     const totalIngresos = await Reserva.aggregate([
-       {
-         $lookup: {
-           from: "usuarios",
-           localField: "cuidador",
-           foreignField: "_id",
-           as: "cuidador",
-         },
-       },
-       { $unwind: "$cuidador" },
-       {
-         $group: {
-           _id: null,
-           totalIngresos: {
-             $sum: { $multiply: ["$cuidador.tarifaHora", "$contadorTurnos"] },
-           },
-         },
-       },
-     ]);
+    const totalIngresos = await Reserva.aggregate([
+      {
+        $lookup: {
+          from: "usuarios",
+          localField: "cuidador",
+          foreignField: "_id",
+          as: "cuidador",
+        },
+      },
+      { $unwind: "$cuidador" },
+      {
+        $group: {
+          _id: null,
+          totalIngresos: {
+            $sum: { $multiply: ["$cuidador.tarifaHora", "$contadorTurnos"] },
+          },
+        },
+      },
+    ]);
 
-     const promedioPuntuacion = await Resenia.aggregate([
-       {
-         $group: {
-           _id: null,
-           promedioPuntuacion: { $avg: "$puntuacion" },
-         },
-       },
-     ]);
+    const promedioPuntuacion = await Resenia.aggregate([
+      {
+        $group: {
+          _id: null,
+          promedioPuntuacion: { $avg: "$puntuacion" },
+        },
+      },
+    ]);
 
-     return {
-       reservas,
-       estadisticas: {
-         reservasFiltradas, // o total de registros mostrados en pantalla,
-         totalReservas,
-         reservasPendientes,
-         reservasFinalizadas,
-         reservasAprobadas,
-         reservasCanceladas,
-         reservasNoAprobadas,
-         reservasAnuladas,
-         totalIngresos: totalIngresos[0] ? totalIngresos[0].totalIngresos : 0,
-         promedioPuntuacion: promedioPuntuacion[0]
-           ? promedioPuntuacion[0].promedioPuntuacion
-           : 0,
-       },
-     };
-   } catch (error) {
-     throw new Error(error.message);
-   }
+    return {
+      reservas,
+      estadisticas: {
+        reservasFiltradas, // o total de registros mostrados en pantalla,
+        totalReservas,
+        reservasPendientes,
+        reservasFinalizadas,
+        reservasAprobadas,
+        reservasCanceladas,
+        reservasNoAprobadas,
+        reservasAnuladas,
+        totalIngresos: totalIngresos[0] ? totalIngresos[0].totalIngresos : 0,
+        promedioPuntuacion: promedioPuntuacion[0]
+          ? promedioPuntuacion[0].promedioPuntuacion
+          : 0,
+      },
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 // Función para obtener las reservas de un cuidador en un rango de fechas que tengan estado Aprobada o Pendiente, se utiliza en la función getDisponibilidadCuidador de turnoService
