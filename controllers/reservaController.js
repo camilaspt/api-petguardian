@@ -5,13 +5,8 @@ const reservaService = require("../services/reservaService");
 // Función para obtener todas las reservas con sus turnos, con time zone de argentina, en la BD esta guardado con +00:00 por defecto
 const getReservas = async (req, res) => {
   try {
-    const { search, estado, fechaInicio, fechaFin } = req.body;
-    const reservas = await reservaService.getReservas({
-      search,
-      estado,
-      fechaInicio,
-      fechaFin,
-    });
+    const filtros = req.body;
+    const reservas = await reservaService.getReservas(filtros);
     res.status(200).json(reservas);
   } catch (error) {
     res.status(400).json({ message: error.message });
