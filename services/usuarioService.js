@@ -442,7 +442,6 @@ const calcularPromedioPuntuacion = async (cuidadorId, nuevaPuntuacion) => {
 
     return promedio;
   } catch (error) {
-    console.error("Error al calcular el promedio de puntuaciones:", error);
     throw new Error("No se pudo calcular el promedio de puntuaciones");
   }
 };
