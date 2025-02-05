@@ -2,7 +2,12 @@ const express = require('express');
 const router = express.Router();
 const reservaController = require('../controllers/reservaController.js');
 const authMiddleware = require("../services/authMiddlewareService.js");
-
+/**
+ * @swagger
+ * tags:
+ *   name: Reservas
+ *   description: API para gestionar Reservas
+ */
 
 router.post('/',authMiddleware.verifyToken, authMiddleware.verifyCliente, reservaController.createReserva);
 router.delete('/:id',authMiddleware.verifyToken, authMiddleware.verifyAdmin, reservaController.deleteReserva); 
