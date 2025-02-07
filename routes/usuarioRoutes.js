@@ -7,7 +7,7 @@ const upload = require('../utils/cloudinaryConfig.js').upload;
  * @swagger
  * tags:
  *   name: Usuario
- *   description: API para gestionar usuarios
+ *   description: API para gestionar Usuarios
  */
 
 /**
@@ -83,7 +83,7 @@ router.post("/login", usuarioController.login);
  * /api/usuarios:
  *   post:
  *     summary: Crear un nuevo usuario
- *     description: Permite registrar un nuevo usuario en el sistema.
+ *     description: Permite registrar un nuevo usuario (Cliente/Cuidador) en el sistema.
  *     tags: [Usuario]
  *     requestBody:
  *       required: true
@@ -108,6 +108,10 @@ router.post("/login", usuarioController.login);
  *                 type: string
  *                 description: El apellido del usuario
  *                 example: Perez
+ *               telefono:
+ *                 type: string
+ *                 description: Teléfono del usuario
+ *                 example: 3413454545
  *               cuidador:
  *                 type: boolean
  *                 description: Indica si el usuario es un cuidador
@@ -184,7 +188,7 @@ router.post("/", usuarioController.createNewUser);
  *                   telefono:
  *                     type: string
  *                     description: Teléfono del usuario
- *                     example: 123456789
+ *                     example: 3413454545
  *       '400':
  *         description: Error en la solicitud
  *         content:

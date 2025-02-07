@@ -7,7 +7,7 @@ const authMiddleware = require("../services/authMiddlewareService.js");
  * @swagger
  * tags:
  *   name: Estados
- *   description: API para gestionar estados
+ *   description: API para gestionar Estados
  */
 
 /**

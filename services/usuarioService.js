@@ -7,6 +7,7 @@ const Resenia = require("../models/Resenia.js");
 //     "password": "123456",
 //     "nombre": "test",
 //     "apellido": "test",
+//     "telefono": "3413453434",
 //     "cuidador": false,
 // }
 // Función para crear un usuario

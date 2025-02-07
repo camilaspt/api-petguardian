@@ -7,7 +7,7 @@ const authMiddleware = require("../services/authMiddlewareService.js");
  * @swagger
  * tags:
  *   name: Disponibilidad Cuidador
- *   description: API para gestionar disponibilidad de cuidadores
+ *   description: API para gestionar Disponibilidad de Cuidadores
  */
 
 /**

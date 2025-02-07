@@ -8,7 +8,7 @@ const upload = require("../utils/cloudinaryConfig.js").upload;
  * @swagger
  * tags:
  *   name: Mascota
- *   description: API para gestionar mascotas
+ *   description: API para gestionar Mascotas
  */
 
 /**
