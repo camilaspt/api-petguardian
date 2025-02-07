@@ -1,14 +1,9 @@
 const DisponibilidadCuidador = require('../models/DisponibilidadCuidador.js');
 const crearDisponibilidad = async (fecha, horarios, idCuidador) => {
     try {
-        console.log('Horarios recibidos:', horarios);
-
         const horas = horarios.map(horario => {
-            console.log('Procesando horario:', horario);
             return horario.horaInicio.toString();
         });
-
-        console.log('Horas procesadas:', horas);
 
         const disponibilidad = {
             fecha: fecha,
@@ -16,12 +11,10 @@ const crearDisponibilidad = async (fecha, horarios, idCuidador) => {
             cuidador: idCuidador
         };
 
-
         const result = await DisponibilidadCuidador.create(disponibilidad);
 
         return result;
     } catch (error) {
-        console.log('Error al crear disponibilidad:', error.message);
         throw new Error(error.message);
     }
 };
