@@ -12,7 +12,7 @@ const authMiddleware = require("../services/authMiddlewareService.js");
 
 /**
  * @swagger
- * /:
+ * /api/turnos:
  *   get:
  *     summary: Obtener todos los turnos
  *     description: Permite obtener una lista de todos los turnos.
@@ -52,7 +52,7 @@ router.get('/', authMiddleware.verifyToken, turnoController.getTurnos);
 
 /**
  * @swagger
- * /:
+ * /api/turnos:
  *   post:
  *     summary: Crear un nuevo turno
  *     description: Permite crear un nuevo turno en el sistema.
@@ -106,7 +106,7 @@ router.post('/', authMiddleware.verifyToken, authMiddleware.verifyCliente, turno
 
 /**
  * @swagger
- * /disponibilidad:
+ * /api/turnos/disponibilidad:
  *   post:
  *     summary: Obtener disponibilidad de un cuidador
  *     description: Permite obtener la disponibilidad de un cuidador en un rango de fechas.
@@ -157,7 +157,7 @@ router.post('/disponibilidad', authMiddleware.verifyToken, turnoController.getDi
 
 /**
  * @swagger
- * /{id}:
+ * /api/turnos/{id}:
  *   delete:
  *     summary: Eliminar un turno
  *     description: Permite eliminar un turno del sistema.

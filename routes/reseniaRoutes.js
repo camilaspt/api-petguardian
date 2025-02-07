@@ -12,7 +12,7 @@ const authMiddleware = require("../services/authMiddlewareService.js");
 
 /**
  * @swagger
- * /:
+ * /api/resenias:
  *   get:
  *     summary: Obtener todas las reseñas
  *     description: Permite obtener una lista de todas las reseñas.
@@ -54,7 +54,7 @@ router.get('/', authMiddleware.verifyToken, reseniaController.getResenias);
 
 /**
  * @swagger
- * /:
+ * /api/resenias:
  *   post:
  *     summary: Crear una nueva reseña
  *     description: Permite crear una nueva reseña.
@@ -113,7 +113,7 @@ router.post('/', authMiddleware.verifyToken, authMiddleware.verifyCliente, resen
 
 /**
  * @swagger
- * /{id}:
+ * /api/resenias/{id}:
  *   delete:
  *     summary: Eliminar una reseña
  *     description: Permite eliminar una reseña.
@@ -151,7 +151,7 @@ router.delete('/:id', authMiddleware.verifyToken, reseniaController.deleteReseni
 
 /**
  * @swagger
- * /{id}:
+ * /api/resenias/{id}:
  *   get:
  *     summary: Obtener una reseña
  *     description: Permite obtener la información de una reseña específica.
@@ -198,7 +198,7 @@ router.get("/:id", authMiddleware.verifyToken, reseniaController.getOneResenia);
 
 /**
  * @swagger
- * /reseniaPorReserva/{id}:
+ * /api/resenias/reseniaPorReserva/{id}:
  *   get:
  *     summary: Obtener reseña por reserva
  *     description: Permite obtener la reseña de una reserva específica.
@@ -245,7 +245,7 @@ router.get('/reseniaPorReserva/:id', authMiddleware.verifyToken, reseniaControll
 
 /**
  * @swagger
- * /reseniasPorUsuario/{id}:
+ * /api/resenias/reseniasPorUsuario/{id}:
  *   get:
  *     summary: Obtener reseñas por usuario
  *     description: Permite obtener una lista de reseñas de un usuario específico.
@@ -294,7 +294,7 @@ router.get('/reseniasPorUsuario/:id', authMiddleware.verifyToken, reseniaControl
 
 /**
  * @swagger
- * /{id}:
+ * /api/resenias/{id}:
  *   put:
  *     summary: Editar una reseña
  *     description: Permite editar una reseña existente.

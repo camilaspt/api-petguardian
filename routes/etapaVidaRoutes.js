@@ -12,7 +12,7 @@ const authMiddleware = require("../services/authMiddlewareService.js");
 
 /**
  * @swagger
- * /:
+ * /api/etapasVida:
  *   get:
  *     summary: Obtener todas las etapas de vida
  *     description: Permite obtener una lista de todas las etapas de vida.
@@ -48,7 +48,7 @@ router.get("/", authMiddleware.verifyToken, etapaVidaController.getEtapasVida);
 
 /**
  * @swagger
- * /:
+ * /api/etapasVida:
  *   post:
  *     summary: Crear una nueva etapa de vida
  *     description: Permite crear una nueva etapa de vida en el sistema.
@@ -93,7 +93,7 @@ router.post("/", authMiddleware.verifyToken, authMiddleware.verifyAdmin, etapaVi
 
 /**
  * @swagger
- * /{id}:
+ * /api/etapasVida/{id}:
  *   delete:
  *     summary: Eliminar una etapa de vida
  *     description: Permite eliminar una etapa de vida del sistema.
@@ -141,7 +141,7 @@ router.delete("/:id", authMiddleware.verifyToken, authMiddleware.verifyAdmin, et
 
 /**
  * @swagger
- * /{id}:
+ * /api/etapasVida/{id}:
  *   put:
  *     summary: Editar una etapa de vida
  *     description: Permite editar una etapa de vida existente en el sistema.

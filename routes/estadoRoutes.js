@@ -12,7 +12,7 @@ const authMiddleware = require("../services/authMiddlewareService.js");
 
 /**
  * @swagger
- * /:
+ * /api/estados:
  *   get:
  *     summary: Obtener todos los estados
  *     description: Permite obtener una lista de todos los estados.
@@ -48,7 +48,7 @@ router.get("/", authMiddleware.verifyToken, estadoController.getEstados);
 
 /**
  * @swagger
- * /:
+ * /api/estados:
  *   post:
  *     summary: Crear un nuevo estado
  *     description: Permite crear un nuevo estado en el sistema.
@@ -93,7 +93,7 @@ router.post("/", authMiddleware.verifyToken, authMiddleware.verifyAdmin, estadoC
 
 /**
  * @swagger
- * /{id}:
+ * /api/estados/{id}:
  *   delete:
  *     summary: Eliminar un estado
  *     description: Permite eliminar un estado del sistema.

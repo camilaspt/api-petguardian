@@ -6,17 +6,17 @@ const authMiddleware = require("../services/authMiddlewareService.js");
 /**
  * @swagger
  * tags:
- *   name: Mascotas
- *   description: API para gestionar Mascotas
+ *   name: Tipo Mascota
+ *   description: API para gestionar Tipo Mascota
  */
 
 /**
  * @swagger
- * /:
+ * /api/tiposMascota:
  *   get:
  *     summary: Obtener todos los tipos de mascota
  *     description: Permite obtener una lista de todos los tipos de mascota.
- *     tags: [Mascotas]
+ *     tags: [Tipo Mascota]
  *     responses:
  *       '200':
  *         description: Lista de tipos de mascota obtenida con éxito
@@ -48,11 +48,11 @@ router.get("/", authMiddleware.verifyToken, tipoMascotaController.getTiposMascot
 
 /**
  * @swagger
- * /:
+ * /api/tiposMascota:
  *   post:
  *     summary: Crear un nuevo tipo de mascota
  *     description: Permite crear un nuevo tipo de mascota en el sistema.
- *     tags: [Mascotas]
+ *     tags: [Tipo Mascota]
  *     requestBody:
  *       required: true
  *       content:
@@ -93,11 +93,11 @@ router.post("/", authMiddleware.verifyToken, authMiddleware.verifyAdmin, tipoMas
 
 /**
  * @swagger
- * /{id}:
+ * /api/tiposMascota/{id}:
  *   delete:
  *     summary: Eliminar un tipo de mascota
  *     description: Permite eliminar un tipo de mascota del sistema.
- *     tags: [Mascotas]
+ *     tags: [Tipo Mascota]
  *     parameters:
  *       - in: path
  *         name: id
@@ -141,11 +141,11 @@ router.delete("/:id", authMiddleware.verifyToken, authMiddleware.verifyAdmin, ti
 
 /**
  * @swagger
- * /{id}:
+ * /api/tiposMascota/{id}:
  *   put:
  *     summary: Editar un tipo de mascota
  *     description: Permite editar la información de un tipo de mascota en el sistema.
- *     tags: [Mascotas]
+ *     tags: [Tipo Mascota]
  *     parameters:
  *       - in: path
  *         name: id

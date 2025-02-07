@@ -11,7 +11,7 @@ const authMiddleware = require("../services/authMiddlewareService.js");
 
 /**
  * @swagger
- * /:
+ * /api/reservas:
  *   post:
  *     summary: Crear una nueva reserva
  *     description: Permite crear una nueva reserva y sus turnos asociados.
@@ -99,7 +99,7 @@ router.post('/',authMiddleware.verifyToken, authMiddleware.verifyCliente, reserv
 
 /**
  * @swagger
- * /{id}:
+ * /api/reservas/{id}:
  *   delete:
  *     summary: Eliminar una reserva
  *     description: Permite eliminar una reserva que esté en estado Pendiente.
@@ -137,7 +137,7 @@ router.delete('/:id',authMiddleware.verifyToken, authMiddleware.verifyAdmin, res
 
 /**
  * @swagger
- * /{id}:
+ * /api/reservas/{id}:
  *   put:
  *     summary: Editar una reserva
  *     description: Permite editar la información de una reserva.
@@ -206,7 +206,7 @@ router.put('/:id',authMiddleware.verifyToken, reservaController.editReserva);
 
 /**
  * @swagger
- * /reservasPorCliente/{id}:
+ * /api/reservas/reservasPorCliente/{id}:
  *   get:
  *     summary: Obtener reservas por cliente
  *     description: Permite obtener una lista de reservas de un cliente específico.
@@ -292,7 +292,7 @@ router.get('/reservasPorCliente/:id',authMiddleware.verifyToken, authMiddleware.
 
 /**
  * @swagger
- * /reservasPorCuidador/{id}:
+ * /api/reservas/reservasPorCuidador/{id}:
  *   get:
  *     summary: Obtener reservas por cuidador
  *     description: Permite obtener una lista de reservas de un cuidador específico.
@@ -378,7 +378,7 @@ router.get('/reservasPorCuidador/:id',authMiddleware.verifyToken, authMiddleware
 
 /**
  * @swagger
- * /:
+ * /api/reservas:
  *   get:
  *     summary: Obtener todas las reservas
  *     description: Permite obtener una lista de todas las reservas para el informe de admin.
@@ -461,7 +461,7 @@ router.get("/", authMiddleware.verifyToken, authMiddleware.verifyAdmin, reservaC
 
 /**
  * @swagger
- * /cancelar/{idReserva}:
+ * /api/reservas/cancelar/{idReserva}:
  *   put:
  *     summary: Cancelar una reserva
  *     description: Permite cancelar una reserva que esté en estado Pendiente o Aprobada.
@@ -499,7 +499,7 @@ router.put('/cancelar/:idReserva', authMiddleware.verifyToken, authMiddleware.ve
 
 /**
  * @swagger
- * /aprobar/{idReserva}:
+ * /api/reservas/aprobar/{idReserva}:
  *   put:
  *     summary: Aprobar una reserva
  *     description: Permite aprobar una reserva que esté en estado Pendiente.
@@ -537,7 +537,7 @@ router.put('/aprobar/:idReserva', authMiddleware.verifyToken, authMiddleware.ver
 
 /**
  * @swagger
- * /rechazar/{idReserva}:
+ * /api/reservas/rechazar/{idReserva}:
  *   put:
  *     summary: Rechazar una reserva
  *     description: Permite rechazar una reserva que esté en estado Pendiente.
@@ -575,7 +575,7 @@ router.put('/rechazar/:idReserva', authMiddleware.verifyToken, authMiddleware.ve
 
 /**
  * @swagger
- * /anular/{idReserva}:
+ * /api/reservas/anular/{idReserva}:
  *   put:
  *     summary: Anular una reserva
  *     description: Permite anular una reserva que esté en estado Aprobada.
@@ -613,7 +613,7 @@ router.put('/anular/:idReserva', authMiddleware.verifyToken, authMiddleware.veri
 
 /**
  * @swagger
- * /{id}:
+ * /api/reservas/{id}:
  *   get:
  *     summary: Obtener una reserva
  *     description: Permite obtener la información de una reserva específica.

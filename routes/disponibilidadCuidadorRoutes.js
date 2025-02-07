@@ -12,7 +12,7 @@ const authMiddleware = require("../services/authMiddlewareService.js");
 
 /**
  * @swagger
- * /:
+ * /api/disponibilidadCuidador:
  *   get:
  *     summary: Obtener disponibilidades por cuidador
  *     description: Permite obtener una lista de disponibilidades de un cuidador específico.
@@ -51,7 +51,7 @@ router.get("/", authMiddleware.verifyToken, disponibilidadCuidadorController.get
 
 /**
  * @swagger
- * /:
+ * /api/disponibilidadCuidador:
  *   post:
  *     summary: Crear una nueva disponibilidad
  *     description: Permite crear una nueva disponibilidad para un cuidador.
@@ -109,7 +109,7 @@ router.post('/', authMiddleware.verifyToken, authMiddleware.verifyCuidadorHabili
 
 /**
  * @swagger
- * /update:
+ * /api/disponibilidadCuidador/update:
  *   post:
  *     summary: Crear o actualizar una disponibilidad
  *     description: Permite crear o actualizar una disponibilidad para un cuidador.
@@ -167,7 +167,7 @@ router.post("/update", authMiddleware.verifyToken, authMiddleware.verifyCuidador
 
 /**
  * @swagger
- * /:
+ * /api/disponibilidadCuidador:
  *   delete:
  *     summary: Eliminar una disponibilidad
  *     description: Permite eliminar una disponibilidad para un cuidador.
@@ -220,7 +220,7 @@ router.delete("/", authMiddleware.verifyToken, authMiddleware.verifyCuidadorHabi
 
 /**
  * @swagger
- * /{id}:
+ * /api/disponibilidadCuidador/{id}:
  *   put:
  *     summary: Actualizar una disponibilidad
  *     description: Permite actualizar una disponibilidad existente para un cuidador.

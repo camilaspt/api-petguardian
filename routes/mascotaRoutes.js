@@ -13,7 +13,7 @@ const upload = require("../utils/cloudinaryConfig.js").upload;
 
 /**
  * @swagger
- * /:
+ * /api/mascotas:
  *   get:
  *     summary: Obtener todas las mascotas
  *     description: Permite obtener una lista de todas las mascotas no eliminadas.
@@ -61,7 +61,7 @@ router.get("/", authMiddleware.verifyToken, mascotaController.getMascotas);
 
 /**
  * @swagger
- * /:
+ * /api/mascotas:
  *   post:
  *     summary: Crear una nueva mascota
  *     description: Permite crear una nueva mascota.
@@ -127,7 +127,7 @@ router.post("/", authMiddleware.verifyToken, authMiddleware.verifyCliente, masco
 
 /**
  * @swagger
- * /upload/{id}:
+ * /api/mascotas/upload/{id}:
  *   post:
  *     summary: Cargar una imagen de mascota
  *     description: Permite cargar una imagen de mascota.
@@ -197,7 +197,7 @@ router.post("/upload/:id", authMiddleware.verifyToken, authMiddleware.verifyClie
 
 /**
  * @swagger
- * /{id}:
+ * /api/mascotas/{id}:
  *   delete:
  *     summary: Eliminar una mascota
  *     description: Permite eliminar (marcar como eliminada) una mascota.
@@ -235,7 +235,7 @@ router.delete("/:id", authMiddleware.verifyToken, authMiddleware.verifyCliente, 
 
 /**
  * @swagger
- * /{id}:
+ * /api/mascotas/{id}:
  *   put:
  *     summary: Editar una mascota
  *     description: Permite editar la información de una mascota.
@@ -304,7 +304,7 @@ router.put("/:id", authMiddleware.verifyToken, authMiddleware.verifyCliente, mas
 
 /**
  * @swagger
- * /mascotasPorUsuario/{id}:
+ * /api/mascotas/mascotasPorUsuario/{id}:
  *   get:
  *     summary: Obtener mascotas por usuario
  *     description: Permite obtener una lista de mascotas de un usuario específico.
@@ -359,7 +359,7 @@ router.get("/mascotasPorUsuario/:id", authMiddleware.verifyToken, mascotaControl
 
 /**
  * @swagger
- * /{id}:
+ * /api/mascotas/{id}:
  *   get:
  *     summary: Obtener una mascota
  *     description: Permite obtener la información de una mascota específica.
