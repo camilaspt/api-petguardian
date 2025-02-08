@@ -427,23 +427,16 @@ const obtenerCuidadoresConReservasPorEstado = async (filtros) => {
 
 const calcularPromedioPuntuacion = async (cuidadorId, nuevaPuntuacion) => {
   try {
-    // Obtener todas las reseñas del cuidador
     const resenias = await Resenia.find({ cuidador: cuidadorId });
-    console.log("Reseñas encontradas:", resenias);
 
-    // Calcular el total de puntuaciones incluyendo la nueva puntuación
     const totalPuntuacion =
       resenias.reduce((total, resenia) => total + resenia.puntuacion, 0) +
       nuevaPuntuacion;
-    console.log("Total de puntuaciones:", totalPuntuacion);
 
-    // Calcular el promedio de puntuaciones incluyendo la nueva reseña
     const promedio = totalPuntuacion / (resenias.length + 1);
-    console.log("Promedio de puntuaciones calculado:", promedio);
 
     return promedio;
   } catch (error) {
-    console.error("Error al calcular el promedio de puntuaciones:", error);
     throw new Error("No se pudo calcular el promedio de puntuaciones");
   }
 };
