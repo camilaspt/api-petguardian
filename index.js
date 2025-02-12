@@ -11,14 +11,10 @@ require('dotenv').config();
 
 connection.conectarDB();
 
-const corsOptions = {
-  origin: 'https://app-petguardian.vercel.app',
-  optionsSuccessStatus: 200
-};
 
 const app = express();
 app.use(express.json());
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(router); 
 
 // Configuración de multer
