@@ -277,6 +277,9 @@ router.put('/:id',authMiddleware.verifyToken, reservaController.editReserva);
  *                       comentario:
  *                         type: string
  *                         example: Excelente servicio
+ *                   horaTurno:
+ *                     type: string
+ *                     example: "08"
  *       '400':
  *         description: Error en la solicitud
  *         content:
@@ -363,6 +366,9 @@ router.get('/reservasPorCliente/:id',authMiddleware.verifyToken, authMiddleware.
  *                       comentario:
  *                         type: string
  *                         example: Excelente servicio
+ *                   horaTurno:
+ *                     type: string
+ *                     example: "08"
  *       '400':
  *         description: Error en la solicitud
  *         content:

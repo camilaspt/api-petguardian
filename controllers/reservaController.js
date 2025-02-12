@@ -1,5 +1,6 @@
 const Reserva = require("../models/Reserva.js");
 const Estado = require("../models/Estado.js");
+const Turno = require("../models/Turno.js");
 const reservaService = require("../services/reservaService");
 
 // Función para obtener todas las reservas con sus turnos, con time zone de argentina, en la BD esta guardado con +00:00 por defecto
@@ -79,10 +80,24 @@ const getReservasPorCliente = async (req, res) => {
       .populate("mascotas", "nombre")
       .populate("estado", "estado")
       .populate("resenia", "puntuacion comentario");
-    res.status(200).json(reservas);
+
+    const reservasConTurnos = await Promise.all(
+      reservas.map(async (reserva) => {
+        const turnos = await Turno.find({ reserva: reserva._id });
+        let horaTurno = null;
+        if (turnos.length > 0) {
+          horaTurno = turnos[0].fechaHoraInicio
+            .toISOString()
+            .split("T")[1].substring(0, 2);
+        }
+        return { ...reserva.toObject(), horaTurno};
+      })
+    );
+    res.status(200).json(reservasConTurnos);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+    
 };
 // para obtener las reservas de un cuidador, para su gestión de reservas
 const getReservasPorCuidador = async (req, res) => {
@@ -93,7 +108,20 @@ const getReservasPorCuidador = async (req, res) => {
       .populate("mascotas", "nombre")
       .populate("estado", "estado")
       .populate("resenia", "puntuacion comentario");
-    res.status(200).json(reservas);
+    const reservasConTurnos = await Promise.all(
+      reservas.map(async (reserva) => {
+        const turnos = await Turno.find({ reserva: reserva._id });
+        let horaTurno = null;
+        if (turnos.length > 0) {
+          horaTurno = turnos[0].fechaHoraInicio
+            .toISOString()
+            .split("T")[1]
+            .substring(0, 2);
+        }
+        return { ...reserva.toObject(), horaTurno };
+      })
+    );    
+    res.status(200).json(reservasConTurnos);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
