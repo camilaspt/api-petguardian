@@ -76,7 +76,7 @@ const getReservasPorCliente = async (req, res) => {
         if (turnos.length > 0) {
           horaTurno = turnos[0].fechaHoraInicio
             .toISOString()
-            .split("T")[1].substring(0, 2);
+            .split("T")[1].substring(0, 5);
         }
         return { ...reserva.toObject(), horaTurno};
       })
@@ -104,7 +104,7 @@ const getReservasPorCuidador = async (req, res) => {
           horaTurno = turnos[0].fechaHoraInicio
             .toISOString()
             .split("T")[1]
-            .substring(0, 2);
+            .substring(0, 5);
         }
         return { ...reserva.toObject(), horaTurno };
       })
