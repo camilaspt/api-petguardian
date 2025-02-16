@@ -2,18 +2,6 @@ const Reserva = require("../models/Reserva.js");
 const Estado = require("../models/Estado.js");
 const Turno = require("../models/Turno.js");
 const reservaService = require("../services/reservaService");
-
-// Función para obtener todas las reservas con sus turnos, con time zone de argentina, en la BD esta guardado con +00:00 por defecto
-const getReservas = async (req, res) => {
-  try {
-    const filtros = req.body;
-    const reservas = await reservaService.getReservas(filtros);
-    res.status(200).json(reservas);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
 // createReserva: Crea unna reserva y sus turnos asociados
 //no valida los turnos, eso se valida en la función getDisponibilidadCuidador de turnoService, el cliente seleccionaría directamente de ese array de horas disponibles
 // Las reservas son con días consecutivos, se crea un turno de una hora para cada día al mimos horario.
@@ -195,7 +183,6 @@ const anularReserva = async (req, res) => {
 };
 
 module.exports = {
-  getReservas,
   createReserva,
   deleteReserva,
   editReserva,
