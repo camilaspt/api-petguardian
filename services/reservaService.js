@@ -33,9 +33,14 @@ const createReserva = async ({
       throw new Error("El cuidador no está habilitado");
     }
     const tarifaTurno = cuidadorData.tarifaHora;
-console.log(fechaInicio, fechaFin);
-const startDate = moment.utc(fechaInicio).startOf("day").toDate();
-const endDate = moment.utc(fechaFin).startOf("day").toDate();
+const startDate = moment
+  .utc(fechaInicio, "YYYY-MM-DD")
+  .set({ hour: 10, minute: 0, second: 0, millisecond: 0 })
+  .toDate();
+const endDate = moment
+  .utc(fechaFin, "YYYY-MM-DD")
+  .set({ hour: 10, minute: 0, second: 0, millisecond: 0 })
+  .toDate();
     const newReserva = new Reserva({
       fechaInicio: startDate,
       fechaFin: endDate,
@@ -48,11 +53,9 @@ const endDate = moment.utc(fechaFin).startOf("day").toDate();
     });
 
     const savedReserva = await newReserva.save({ session });
-    console.log(fechaInicio, fechaFin, horaTurno);
 
 
 
-console.log(startDate, endDate);
     const days = Math.ceil((endDate - startDate + 1000 * 60 * 60 * 24) / (1000 * 60 * 60 * 24));
 
     // Crear turnos para cada día
@@ -66,7 +69,6 @@ for (let i = 0; i < days; i++) {
       millisecond: 0,
     })
     .toDate();
-  console.log(turnoDate);
   // Crear un nuevo turno
   const newTurno = new Turno({
     fechaHoraInicio: turnoDate,
