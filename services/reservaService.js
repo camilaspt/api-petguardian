@@ -33,10 +33,12 @@ const createReserva = async ({
       throw new Error("El cuidador no está habilitado");
     }
     const tarifaTurno = cuidadorData.tarifaHora;
-
+console.log(fechaInicio, fechaFin);
+const startDate = moment.utc(fechaInicio).startOf("day").toDate();
+const endDate = moment.utc(fechaFin).startOf("day").toDate();
     const newReserva = new Reserva({
-      fechaInicio,
-      fechaFin,
+      fechaInicio: startDate,
+      fechaFin: endDate,
       comentario,
       tarifaTurno,
       cliente: clienteId,
@@ -46,30 +48,32 @@ const createReserva = async ({
     });
 
     const savedReserva = await newReserva.save({ session });
+    console.log(fechaInicio, fechaFin, horaTurno);
 
-    // Calcular la cantidad de días entre fechaInicio y fechaFin
-    const startDate = new Date(fechaInicio);
-    const endDate = new Date(fechaFin);
+
+
+console.log(startDate, endDate);
     const days = Math.ceil((endDate - startDate + 1000 * 60 * 60 * 24) / (1000 * 60 * 60 * 24));
 
     // Crear turnos para cada día
-    for (let i = 0; i < days; i++) {
-      const turnoDate = new Date(startDate);
-      turnoDate.setDate(turnoDate.getDate() + i);
-      turnoDate.setHours(
-        parseInt(horaTurno),
-        parseInt(horaTurno),
-        0,
-        0
-      ); // Establecer la hora del turno
-
-      // Crear un nuevo turno
-      const newTurno = new Turno({
-        fechaHoraInicio: turnoDate,
-        reserva: savedReserva._id,
-      });
-      await newTurno.save({ session });
-    }
+for (let i = 0; i < days; i++) {
+  const turnoDate = moment.utc(startDate)
+    .add(i, "days")
+    .set({
+      hour: parseInt(horaTurno),
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+    })
+    .toDate();
+  console.log(turnoDate);
+  // Crear un nuevo turno
+  const newTurno = new Turno({
+    fechaHoraInicio: turnoDate,
+    reserva: savedReserva._id,
+  });
+  await newTurno.save({ session });
+}
 
     // Actualizar el contador de turnos en la reserva
     const updatedReserva = await Reserva.findByIdAndUpdate(
