@@ -1,5 +1,5 @@
 const express = require("express");
-const   router = express.Router();
+const router = express.Router();
 const informesController = require("../controllers/informesController.js");
 const authMiddleware = require("../services/authMiddlewareService.js");
 
@@ -9,7 +9,6 @@ const authMiddleware = require("../services/authMiddlewareService.js");
  *   name: Informes
  *   description: API para gestionar Informes
  */
-
 
 /**
  * @swagger
@@ -122,7 +121,12 @@ const authMiddleware = require("../services/authMiddlewareService.js");
  *                   type: string
  *                   example: Error al obtener los clientes con reservas
  */
-router.get( "/clientes-con-reservas", authMiddleware.verifyToken, authMiddleware.verifyAdmin, informesController.getClientesConReservasPorEstado);
+router.get(
+  "/clientes-con-reservas",
+  authMiddleware.verifyToken,
+  authMiddleware.verifyAdmin,
+  informesController.getClientesConReservasPorEstado
+);
 
 /**
  * @swagger
@@ -239,7 +243,12 @@ router.get( "/clientes-con-reservas", authMiddleware.verifyToken, authMiddleware
  *                   type: string
  *                   example: Error al obtener los cuidadores con reservas
  */
-router.get( "/cuidadores-con-reservas", authMiddleware.verifyToken, authMiddleware.verifyAdmin, informesController.getCuidadoresConReservasPorEstado);
+router.get(
+  "/cuidadores-con-reservas",
+  authMiddleware.verifyToken,
+  authMiddleware.verifyAdmin,
+  informesController.getCuidadoresConReservasPorEstado
+);
 
 /**
  * @swagger
@@ -322,4 +331,11 @@ router.get( "/cuidadores-con-reservas", authMiddleware.verifyToken, authMiddlewa
  *                   type: string
  *                   example: Error al obtener las reservas
  */
-router.get("/reservas", authMiddleware.verifyToken, authMiddleware.verifyAdmin, informesController.getReservas);
+router.get(
+  "/reservas",
+  authMiddleware.verifyToken,
+  authMiddleware.verifyAdmin,
+  informesController.getReservas
+);
+
+module.exports = router;
