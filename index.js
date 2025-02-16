@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const connection = require('./config/conectarDB.js');
 const cors = require('cors');
-//const { swaggerUi, specs } = require('./utils/swaggerConfig');
+const { swaggerUi, specs } = require('./utils/swaggerConfig');
 const port = process.env.PORT || 3000;
 const router = require('./routes/routes.js');
 const tareaProgramada = require('./utils/tareaProgramada.js');
@@ -22,7 +22,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // Configuración de Swagger
-//app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.listen(port, () => {
   tareaProgramada.programarUpdateReservas();
