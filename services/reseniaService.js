@@ -22,7 +22,6 @@ const createResenia = async (data) => {
       cuidador,
       data.puntuacion
     );
-    console.log("Nuevo promedio de puntuaciones:", promedioPuntuacion);
 
     // Actualizar el promedio de puntuaciones del cuidador
     const result = await Usuario.findByIdAndUpdate(
@@ -39,8 +38,6 @@ const createResenia = async (data) => {
     //Actualizar la resenia en la reserva
     reserva.resenia = newResenia._id;
     await reserva.save();
-    
-    console.log("Resultado de la actualización:", result);
 
     return newResenia;
   } catch (error) {
