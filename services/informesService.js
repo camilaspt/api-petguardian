@@ -315,7 +315,7 @@ const obtenerCuidadoresConReservasPorEstado = async (filtros) => {
               else: {
                 $cond: {
                   if: { $eq: ["$rol", "Cuidador No Habilitado"] },
-                  then: "No habilitado",
+                  then: "No Habilitado",
                   else: {
                     $cond: {
                       if: { $eq: ["$rol", "Cuidador Pendiente"] },
