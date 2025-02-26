@@ -338,9 +338,9 @@ const obtenerCuidadoresConReservasPorEstado = async (filtros) => {
           },
         },
       },
-      ...(estado
-        ? [{ $match: { estado: { $regex: estado, $options: "i" } } }]
-        : []),
+  ...(estado
+  ? [{ $match: { estado: estado } }]
+  : []),
       {
         $project: {
           createdAt: {
@@ -351,7 +351,7 @@ const obtenerCuidadoresConReservasPorEstado = async (filtros) => {
           email: 1,
           telefono: 1,
           estado: 1,
-          tarifa: 1,
+          tarifaHora: 1,
           promedioPuntuacion: 1,
           reservasTotales: 1,
           reservasCanceladas: 1,
