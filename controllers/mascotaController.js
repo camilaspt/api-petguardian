@@ -12,7 +12,6 @@ const getMascotas = async (req, res) => {
 
 const createMascota = async (req, res) => {
     try {
-        console.log(req.body);
         const newMascota = await service.crearMascota(req.body);
         res.status(201).json(newMascota);
     } catch (error) {

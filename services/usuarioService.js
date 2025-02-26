@@ -42,7 +42,6 @@ const calcularPromedioPuntuacion = async (cuidadorId, nuevaPuntuacion) => {
 
 const habilitarCuidador = async (cuidadorId) => {
   try {
-    console.log("Habilitando cuidador con ID:", cuidadorId);
     const cuidador = await Usuario.findById(cuidadorId);
     if (!cuidador || cuidador.rol !== "Cuidador Pendiente") {
       throw new Error("El usuario no es un Cuidador Pendiente.");
@@ -59,8 +58,7 @@ const habilitarCuidador = async (cuidadorId) => {
 
 const desaprobarCuidador = async (cuidadorId) => {
   try {
-    console.log("Desaprobando cuidador con ID:", cuidadorId);
-    const cuidador = await Usuario.findById(cuidadorId);
+     const cuidador = await Usuario.findById(cuidadorId);
     if (!cuidador || cuidador.rol !== "Cuidador Pendiente") {
       throw new Error("El usuario no es un Cuidador Pendiente.");
     }

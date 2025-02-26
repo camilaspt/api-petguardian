@@ -119,7 +119,6 @@ const guardarImagenPerfil = async (req, res) => {
 const habilitarCuidador = async (req, res) => {
     try {
         const userId = req.params.id;
-        console.log(userId);
         const resultado = await service.habilitarCuidador(userId);
         res.status(200).json(resultado);
     } catch (error) {
@@ -130,7 +129,6 @@ const habilitarCuidador = async (req, res) => {
 const desaprobarCuidador = async (req, res) => {
     try {
         const userId = req.params.id;
-        console.log(userId);
         const resultado = await service.desaprobarCuidador(userId);
         res.status(200).json(resultado);
     } catch (error) {

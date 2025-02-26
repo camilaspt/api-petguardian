@@ -22,8 +22,7 @@ const verifyAdmin = async (req, res, next) => {
     const userId = req.userId;
     const user = await Usuario.findById(userId);
     if (user && user.rol === "Administrador") {
-      console.log(`Usuario ${userId} tiene permisos como Administrador.`);
-      next();
+         next();
     } else {
       res
         .status(403)
@@ -38,7 +37,6 @@ const verifyCuidadorHabilitado = async (req, res, next) => {
     const userId = req.userId;
     const user = await Usuario.findById(userId);
     if (user && user.rol === "Cuidador Habilitado") {
-      console.log(`Usuario ${userId} tiene permisos como Cuidador Habilitado.`);
       next();
     } else {
       res
@@ -55,7 +53,7 @@ const verifyCliente = async (req, res, next) => {
     const userId = req.userId;
     const user = await Usuario.findById(userId);
     if (user && user.rol === "Cliente") {
-      console.log(`Usuario ${userId} tiene permisos como Cliente.`);
+
       next();
     } else {
       res

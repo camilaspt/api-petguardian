@@ -69,7 +69,6 @@ const getReseniaPorReserva = async (req, res) => {
 const getReseniasPorUsuario = async (req, res) => {
     try {
         const idUsuario = req.params.id;
-        console.log(idUsuario);
 
         const reservas = await Reser.find({ cuidador: idUsuario }).populate("resenia", "reserva puntuacion comentario");
         const resenias = reservas
