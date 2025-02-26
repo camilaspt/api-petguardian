@@ -13,7 +13,7 @@ const getClientesConReservasPorEstado = async (req, res) => {
 
 const getCuidadoresConReservasPorEstado = async (req, res) => {
   try {
-    const filtros = req.body;
+    const filtros = req.query;
     const cuidadores  =
       await service.obtenerCuidadoresConReservasPorEstado(filtros);
     res.status(200).json(cuidadores);
