@@ -3,11 +3,12 @@ const Usuario = require("../models/Usuario");
 // Middleware para verificar el token JWT y extraer el ID del usuario
 const verifyToken = (req, res, next) => {
   const token = req.headers["authorization"];
+  const contra = process.env.AUTH_PASS;
   if (!token) {
     return res.status(403).json({ message: "No token provided." });
   }
 
-  jwt.verify(token, "claveprueba", (err, decoded) => {
+  jwt.verify(token, contra, (err, decoded) => {
     if (err) {
       return res.status(500).json({ message: "Failed to authenticate token." });
     }
