@@ -339,7 +339,7 @@ const obtenerCuidadoresConReservasPorEstado = async (filtros) => {
         },
       },
   ...(estado
-  ? [{ $match: { estado: estado } }]
+  ? [{ $match: { estado: {$eq: estado} } }]
   : []),
       {
         $project: {
